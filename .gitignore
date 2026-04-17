@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+*.db
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/.env
+.idea/
+.vscode/
+
+# Local Storage (RAG data)
+backend/data_store/
+backend/uploads/
+backend/startup_log.txt
+backend/error_log.txt
+
+# OS
+.DS_Store
+Thumbs.db

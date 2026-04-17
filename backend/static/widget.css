@@ -1,0 +1,545 @@
+/* widget.css - Next-Gen Glassmorphic Cyber-Chat UI */
+:root {
+    /* Fallback/Default values - Overridden by dynamic style injection in widget.js */
+    --saas-font: 'Inter', -apple-system, sans-serif;
+    --saas-glass: rgba(13, 13, 18, 0.85);
+    --saas-border: rgba(255, 255, 255, 0.12);
+    --saas-accent: #2dd4bf;
+    --saas-accent-secondary: #0ea5e9;
+    --saas-accent-contrast: #ffffff;
+    --saas-accent-glow: rgba(45, 212, 191, 0.4);
+    --saas-text: #ffffff;
+    --saas-text-muted: rgba(255, 255, 255, 0.5);
+}
+
+#saas-chatbot-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 2147483647; /* Maximum possible z-index */
+    font-family: var(--saas-font, 'Inter', -apple-system, sans-serif);
+    user-select: none;
+    color: var(--saas-text, #fff);
+}
+
+/* 🌀 Toggle Button (The Pulse) */
+#saas-chatbot-toggle {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, var(--saas-accent-secondary), var(--saas-accent));
+    border: none;
+    cursor: pointer;
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    padding: 0;
+    position: relative;
+    box-shadow: 0 15px 35px -5px var(--saas-accent-glow), inset 0 0 15px rgba(255,255,255,0.2);
+}
+
+#saas-chatbot-toggle::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--saas-accent);
+    border-radius: 32px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+#saas-chatbot-toggle:hover {
+    transform: translateY(-5px) scale(1.05) rotate(5deg);
+    box-shadow: 0 20px 45px -10px rgba(45, 212, 191, 0.6);
+}
+
+#saas-chatbot-toggle:hover::after {
+    opacity: 0.3;
+    inset: -8px;
+}
+
+#saas-chatbot-toggle img {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+/* 💎 Main Chat Window (The Glass Vault) */
+#saas-chatbot-window {
+    position: absolute;
+    bottom: 95px;
+    right: 0;
+    width: 380px; /* Slightly narrower for better balance */
+    height: 600px;
+    max-height: calc(100vh - 160px); /* Responsive height cap to prevent overflow */
+    background: var(--saas-glass);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-radius: 32px;
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    border: 1px solid var(--saas-border);
+}
+
+#saas-chatbot-window.saas-open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Header (The Control Strip) */
+#saas-chat-header {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.saas-header-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+#saas-bot-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 16px;
+    background: var(--saas-accent);
+    padding: 2px;
+    object-fit: cover;
+    box-shadow: 0 4px 15px var(--saas-accent-glow);
+}
+
+.saas-bot-title-wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.saas-bot-name {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--saas-text, #fff);
+}
+
+.saas-bot-status {
+    font-size: 10px;
+    font-weight: 700;
+    color: #10b981;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.8;
+}
+
+.saas-status-dot {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+    animation: saas-pulse 2s infinite;
+}
+
+@keyframes saas-pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+#saas-chat-close {
+    background: var(--saas-input-bg);
+    border: none;
+    color: var(--saas-text);
+    cursor: pointer;
+    border-radius: 14px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+#saas-chat-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+/* 🗨️ Message Stream */
+#saas-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+#saas-chat-messages::-webkit-scrollbar { width: 4px; }
+#saas-chat-messages::-webkit-scrollbar-track { background: transparent; }
+#saas-chat-messages::-webkit-scrollbar-thumb { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 10px; 
+}
+
+.saas-message {
+    max-width: 85%;
+    padding: 14px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 500;
+    animation: saas-slide-in 0.4s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes saas-slide-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.saas-message-ai {
+    background: var(--saas-input-bg);
+    color: var(--saas-text);
+    align-self: flex-end;
+    border-bottom-left-radius: 6px;
+    border: 1px solid var(--saas-border);
+}
+
+/* Bullet Point & Markdown Styling */
+.saas-message-ai ul {
+    margin: 10px 0;
+    padding-left: 20px;
+    list-style-type: disc;
+}
+.saas-message-ai li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+.saas-message-ai strong {
+    color: var(--saas-accent); /* Use the brand accent color for bold titles */
+    font-weight: 800;
+}
+.saas-message-ai br {
+    display: block;
+    margin-top: 5px;
+    content: "";
+}
+
+.saas-message-user {
+    background: var(--saas-accent);
+    color: var(--saas-accent-contrast);
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 10px 20px -5px var(--saas-accent-glow);
+}
+
+/* ✨ Quick Links Chips */
+#saas-chat-quick-links {
+    padding: 0 28px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.saas-chip {
+    background: var(--saas-accent-low);
+    border: 1px solid var(--saas-accent);
+    color: var(--saas-accent);
+    padding: 8px 16px;
+    border-radius: 14px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.saas-chip:hover {
+    background: var(--saas-accent);
+    color: var(--saas-accent-contrast);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px var(--saas-accent-glow);
+}
+
+/* ⌨️ Interaction Puck (Input) */
+#saas-chat-input-container {
+    padding: 24px 28px 32px;
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.saas-input-wrapper {
+    flex: 1;
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 4px;
+    transition: all 0.3s;
+}
+
+.saas-input-wrapper:focus-within {
+    border-color: var(--saas-accent);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 20px var(--saas-accent-glow);
+}
+
+#saas-chat-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 12px 16px;
+    font-size: 14px;
+    outline: none;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+#saas-chat-send {
+    background: var(--saas-accent);
+    color: var(--saas-accent-contrast);
+    border: none;
+    border-radius: 18px;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    box-shadow: 0 8px 20px -4px var(--saas-accent-glow);
+}
+
+#saas-chat-send:hover { 
+    transform: scale(1.08) rotate(-5deg);
+    opacity: 0.95;
+}
+
+#saas-chat-send svg { width: 20px; height: 20px; stroke: var(--saas-accent-contrast); fill: none; }
+
+/* 🧠 Typographic Loading */
+.saas-loading { background: transparent !important; border: none !important; padding-left: 0 !important; }
+.saas-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--saas-accent); animation: saas-bounce 1.2s infinite ease-in-out; }
+.saas-dot:nth-child(2) { animation-delay: 0.1s; }
+.saas-dot:nth-child(3) { animation-delay: 0.2s; }
+@keyframes saas-bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; } 40% { transform: scale(1.2); opacity: 1; } }
+
+/* ⭐ Enhanced Review System */
+.saas-review-prompt { align-self: flex-start; width: 100%; }
+.saas-review-btn { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); color: #fbbf24; padding: 10px 20px; border-radius: 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s; }
+.saas-review-form { 
+    background: rgba(255, 255, 255, 0.03); 
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    border-radius: 24px; 
+    padding: 20px; 
+    margin-top: 10px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+.saas-review-title { font-size: 14px; font-weight: 800; color: var(--saas-text); margin-bottom: 16px; }
+.saas-star-row { display: flex; gap: 10px; margin-bottom: 16px; justify-content: center; }
+.saas-star { font-size: 28px; color: rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; background: none; border: none; padding: 0; }
+.saas-star:hover { transform: scale(1.2); }
+.saas-review-comment { 
+    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); 
+    border-radius: 14px; color: #fff; font-size: 13px; padding: 14px; outline: none; resize: none; box-sizing: border-box;
+}
+.saas-review-submit { 
+    width: 100%; background: #fbbf24; color: #000; border: none; border-radius: 14px; 
+    padding: 14px 0; font-size: 13px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin-top: 16px;
+}
+/* 🏷️ Lead Capture Form (The Identification Flow) */
+.saas-lead-container {
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    animation: saas-slide-in 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.saas-lead-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+    animation: saas-fade-in 0.5s ease-out;
+}
+
+.saas-lead-card {
+    width: 92%;
+    max-width: 320px;
+    background: var(--saas-bg-solid);
+    border: 1px solid var(--saas-accent);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+}
+
+.saas-lead-header {
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.saas-lead-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--saas-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+
+.saas-lead-privacy {
+    font-size: 10px;
+    color: #10b981;
+    font-weight: 700;
+}
+
+.saas-lead-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.saas-lead-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.saas-lead-form input, 
+.saas-lead-form select {
+    background: var(--saas-input-bg) !important; 
+    border: 1px solid var(--saas-border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: var(--saas-text) !important; 
+    font-size: 13px;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.saas-lead-form option {
+    background-color: var(--saas-bg-solid);
+    color: var(--saas-text);
+}
+
+.saas-lead-form input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.saas-lead-form input:focus {
+    border-color: var(--saas-accent);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.saas-lead-submit {
+    background: var(--saas-accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+    box-shadow: 0 8px 20px -5px rgba(45, 212, 191, 0.4);
+}
+
+.saas-lead-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px -5px rgba(45, 212, 191, 0.5);
+}
+
+.saas-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.saas-input-group label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--saas-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-left: 4px;
+}
+
+/* 💠 Final Review Touch-ups */
+.saas-review-comment {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    color: white;
+    font-size: 13px;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    transition: 0.3s;
+}
+
+.saas-review-comment:focus { border-color: #fbbf24; }
+
+.saas-review-submit {
+    background: #fbbf24;
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.saas-review-submit:hover { transform: scale(1.02); opacity: 0.9; }
+
+/* 🔒 Locked Gating UI */
+#saas-chat-input:disabled {
+    background: rgba(255, 255, 255, 0.02);
+    cursor: not-allowed;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.saas-lead-card {
+    border: 1px solid var(--saas-accent); 
+    box-shadow: 0 0 40px var(--saas-accent-glow);
+    animation: saas-pulse-border 2s infinite ease-in-out;
+}
+
+@keyframes saas-pulse-border {
+    0% { border-color: var(--saas-accent-low); box-shadow: 0 0 20px var(--saas-accent-glow); opacity: 0.5; }
+    50% { border-color: var(--saas-accent); box-shadow: 0 0 40px var(--saas-accent-glow); opacity: 1; }
+    100% { border-color: var(--saas-accent-low); box-shadow: 0 0 20px var(--saas-accent-glow); opacity: 0.5; }
+}
+
+.saas-header-tools {
+    display: flex;
+    align-items: center;
+}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clearing Session...</title>
+    <script>
+        localStorage.clear();
+        sessionStorage.clear();
+        console.log("Session cleared!");
+        setTimeout(() => {
+            window.location.href = "http://localhost:5173/login";
+        }, 1000);
+    </script>
+</head>
+<body style="background: #05011a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+    <div style="text-align: center;">
+        <h2 style="color: #8b5cf6;">Cleaning Your Browser...</h2>
+        <p>Redirecting you to the login page in 1 second.</p>
+    </div>
+</body>
+</html>
