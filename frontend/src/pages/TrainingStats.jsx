@@ -16,7 +16,7 @@ import {
   Search
 } from 'lucide-react'
 
-const API_BASE = window.location.origin.replace(':5173', ':5000') + '/api'
+const API_BASE = 'https://ai-chatbot-lpap.onrender.com/api'
 
 const StatCard = ({ icon, label, value, sub, color }) => {
   const colors = {
