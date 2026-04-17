@@ -3,7 +3,7 @@
  */
 (function() {
     let businessId = null;
-    let HOST = "http://localhost:5000"; // Fallback
+    let HOST = "https://ai-chatbot-lpap.onrender.com"; // Fallback
     
     const scripts = document.getElementsByTagName('script');
     for (let i = 0; i < scripts.length; i++) {

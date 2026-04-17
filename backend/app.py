@@ -55,23 +55,23 @@ mail = MailService(BREVO_KEY)
 
 os.makedirs("data_store/uploads", exist_ok=True)
 
-# ── Seed admin account ────────────────────────────────────────────────────────
+# ── Seed admin accounts with User-specified passwords ──────────────────────
 try:
-    if not db.get_user_by_username("admin"):
-        db.create_user("u_admin", "admin", generate_password_hash("password"), "admin", None, "admin@example.com")
-except Exception:
-    pass
-
-# Seed both known admin emails for the user
-try:
+    # Admin Account 1: Gokulnath M
     if not db.get_user_by_email("gokulnathm.vtab@gmail.com"):
         db.create_user("u_gokul1", "gokulnathm.vtab@gmail.com",
                        generate_password_hash("Gokul@45"), "admin", None, "gokulnathm.vtab@gmail.com")
+    
+    # Admin Account 2: Secondary Email
     if not db.get_user_by_email("gokulnath96880@gmail.com"):
         db.create_user("u_gokul2", "gokulnath96880@gmail.com",
-                       generate_password_hash("Gokul@45"), "admin", None, "gokulnath96880@gmail.com")
-except Exception:
-    pass
+                       generate_password_hash("Rohit1@45"), "admin", None, "gokulnath96880@gmail.com")
+except Exception as e:
+    print(f"[SEED ERROR] {e}")
+
+@app.before_request
+def log_request_info():
+    print(f"[RECV] {request.method} {request.url}")
 
 # ── Auth Decorator ────────────────────────────────────────────────────────────
 def require_auth(allowed_roles=None):
@@ -314,9 +314,7 @@ def confirm_password_reset():
     return jsonify({"status": "Password updated successfully"})
 
 # ==================== STATIC SERVING ====================
-@app.route('/')
-def serve_ui():
-    return send_from_directory('..', 'index.html')
+# Legacy serve_ui removed to avoid duplicate route collision with Health check
 
 @app.route('/static/widget.js')
 def serve_widget_js():
