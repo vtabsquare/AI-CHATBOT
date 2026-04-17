@@ -14,7 +14,7 @@ import SearchModal    from '../components/SearchModal'
 import CreateBotModal from '../components/CreateBotModal'
 import TrainingStats   from '../pages/TrainingStats'
 
-const API_BASE = 'http://localhost:5000/api'
+const API_BASE = 'https://ai-chatbot-lpap.onrender.com/api'
 
 // ── Status badge helper ───────────────────────────────────────────────────────
 function StatusBadge({ status }) {

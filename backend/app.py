@@ -20,6 +20,16 @@ from services.mail_service import MailService
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+@app.route("/")
+def index():
+    return jsonify({
+        "status": "Online",
+        "service": "VTAB Square AI API",
+        "version": "1.0.0",
+        "message": "Intelligence is active."
+    })
+
+
 # ── Global error handler — always return JSON, never blank 500 ────────────
 @app.errorhandler(Exception)
 def handle_exception(e):
