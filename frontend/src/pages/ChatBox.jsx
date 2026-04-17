@@ -153,29 +153,54 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
   const newQRef = useRef(null)
   const newARef = useRef(null)
 
-  // ── INIT: Fetch workspaces + admin data ──────────────────────────────────
+  // ── INIT: Fetch workspaces + admin data with Retry for Cold Starts ────────
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+
     const init = async () => {
       setIsInitialLoading(true)
-      const r = await authFetch(`${API_BASE}/workspaces`)
-      if (!r) { setIsInitialLoading(false); return }
-      const wss = await r.json()
-      if (Array.isArray(wss)) {
-        setWorkspaces(wss)
-        if (wss.length > 0) setActiveWsId(wss[0].id)
-      }
-      if (user.role === 'admin') {
-        // 5. Fetch Admin Metrics
-        authFetch(`${API_BASE}/admin/metrics`)
-          .then(r => r?.ok ? r.json() : null)
-          .then(d => { if(d) setAdminMetrics(d) })
+      try {
+        const r = await authFetch(`${API_BASE}/workspaces`)
+        if (!r || !r.ok) {
+          if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`[INIT] Backend cold start? Retrying ${retryCount}/${maxRetries}...`);
+            setTimeout(init, 2000);
+            return;
+          }
+          setIsInitialLoading(false);
+          return;
+        }
+        
+        const wss = await r.json()
+        if (Array.isArray(wss)) {
+          setWorkspaces(wss)
+          if (wss.length > 0) setActiveWsId(wss[0].id)
+        }
+        
+        if (user?.role === 'admin') {
+          // Fetch Admin Metrics
+          authFetch(`${API_BASE}/admin/metrics`)
+            .then(r => r?.ok ? r.json() : null)
+            .then(d => { if(d) setAdminMetrics(d) })
 
-        // 6. Fetch Onboarding Requests
-        authFetch(`${API_BASE}/admin/onboarding/all`)
-          .then(r => r?.ok ? r.json() : null)
-          .then(d => { if(d) setOnboardingRequests(d) })
+          // Fetch Onboarding Requests
+          authFetch(`${API_BASE}/admin/onboarding/all`)
+            .then(r => r?.ok ? r.json() : null)
+            .then(d => { if(d) setOnboardingRequests(d) })
+        }
+      } catch (err) {
+        console.error("[INIT ERROR]", err);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          setTimeout(init, 2000);
+        }
+      } finally {
+        if (retryCount >= maxRetries || workspaces.length > 0) {
+          setIsInitialLoading(false)
+        }
       }
-      setIsInitialLoading(false)
     }
     init()
   }, [])
