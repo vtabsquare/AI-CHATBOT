@@ -47,7 +47,7 @@ export default function ForceChangePassword({ token, onPasswordChanged }) {
 
     setLoading(true)
     try {
-      const res = await fetch('http://localhost:5000/api/auth/change-password', {
+      const res = await fetch('https://ai-chatbot-lpap.onrender.com/api/auth/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ current_password: currentPw, new_password: newPw, confirm_password: confirmPw })

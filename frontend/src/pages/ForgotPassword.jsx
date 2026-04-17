@@ -21,49 +21,49 @@ export default function ForgotPassword() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('http://localhost:5000/api/auth/reset-password/request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      })
-      if (!res.ok) throw new Error('User not found or error occurred')
-      setStep(1)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
+        const res = await fetch('https://ai-chatbot-lpap.onrender.com/api/auth/reset-password/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        })
+        if (!res.ok) throw new Error('User not found or error occurred')
+        setStep(1)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
     }
-  }
-
-  const handleVerify = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/reset-password/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code })
-      })
-      if (!res.ok) throw new Error('Invalid or expired code')
-      setStep(2)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
+  
+    const handleVerify = async (e) => {
+      e.preventDefault()
+      setLoading(true)
+      setError('')
+      try {
+        const res = await fetch('https://ai-chatbot-lpap.onrender.com/api/auth/reset-password/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        })
+        if (!res.ok) throw new Error('Invalid or expired code')
+        setStep(2)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
     }
-  }
-
-  const handleReset = async (e) => {
-    e.preventDefault()
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/reset-password/confirm', {
+  
+    const handleReset = async (e) => {
+      e.preventDefault()
+      if (newPassword !== confirmPassword) {
+        setError('Passwords do not match')
+        return
+      }
+      setLoading(true)
+      setError('')
+      try {
+        const res = await fetch('https://ai-chatbot-lpap.onrender.com/api/auth/reset-password/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, password: newPassword })

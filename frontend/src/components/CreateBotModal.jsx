@@ -36,7 +36,7 @@ export default function CreateBotModal({ isOpen, onClose, onCreate }) {
     setLoading(true)
     setError('')
     try {
-      const r = await fetch('http://localhost:5000/api/admin/onboarding', {
+      const r = await fetch('https://ai-chatbot-lpap.onrender.com/api/admin/onboarding', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

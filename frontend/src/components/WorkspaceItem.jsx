@@ -123,7 +123,7 @@ export default function WorkspaceItem({ workspace, isActive, onClick, onRename, 
             <button
               onClick={(e) => { 
                 e.stopPropagation();
-                const snippet = `<script src="http://localhost:5000/static/widget.js" data-business-id="${workspace.id}"></script>`;
+                const snippet = `<script src="https://ai-chatbot-lpap.onrender.com/static/widget.js" data-business-id="${workspace.id}"></script>`;
                 navigator.clipboard.writeText(snippet);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
