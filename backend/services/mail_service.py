@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 class MailService:
     def __init__(self, api_key):
@@ -46,7 +47,7 @@ class MailService:
 
     def send_approval_request(self, to_email, ceo_name, workspace_name, org_name, addr1, addr2, addr3, country_code, contact, approve_token, reject_token, temp_password):
         """Sends a premium approval email with Proceed and Reject buttons, including temp password."""
-        base_url = "https://ai-chatbot-lpap.onrender.com"
+        base_url = os.getenv("FRONTEND_BASE_URL", "https://ai-chatbot-lpap.onrender.com")
         approve_url = f"{base_url}/api/onboarding/approve/{approve_token}"
         reject_url = f"{base_url}/api/onboarding/reject/{reject_token}"
 

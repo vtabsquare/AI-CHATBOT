@@ -18,8 +18,9 @@ from services.db_service import DBService
 from services.mail_service import MailService
 
 app = Flask(__name__)
-# ── Standard CORS: Clean and robust for separate frontend/backend ────────
-CORS(app, resources={r"/*": {"origins": "*"}})
+# ── Standard CORS: Configured for specified production front-end ──────────
+frontend_url = os.getenv("FRONTEND_BASE_URL", "*")
+CORS(app, resources={r"/*": {"origins": [frontend_url, "http://localhost:5173"]}})
 
 @app.route("/")
 def index():
