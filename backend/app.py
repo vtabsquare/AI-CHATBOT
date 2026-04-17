@@ -18,12 +18,8 @@ from services.db_service import DBService
 from services.mail_service import MailService
 
 app = Flask(__name__)
-# ── Robust CORS: Essential for separate frontend/backend on Render ────────
-CORS(app, 
-     resources={r"/*": {"origins": "*"}},
-     supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+# ── Standard CORS: Clean and robust for separate frontend/backend ────────
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route("/")
 def index():
@@ -43,14 +39,11 @@ def handle_exception(e):
     is_timeout = "timeout" in err_str or "connect" in err_str or "10060" in err_str
     print(f"[UNHANDLED ERROR] timeout={is_timeout}: {traceback.format_exc()}")
     
-    response = jsonify({
+    return jsonify({
         "error": "Internal server error", 
         "detail": str(e),
         "retry_suggested": is_timeout
-    })
-    # Force CORS headers on error responses (crucial for "Failed to fetch" debugging)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response, 500
+    }), 500
 
 storage = StorageService()
 ai = AIService()
