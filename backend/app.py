@@ -18,7 +18,12 @@ from services.db_service import DBService
 from services.mail_service import MailService
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+# ── Robust CORS: Essential for separate frontend/backend on Render ────────
+CORS(app, 
+     resources={r"/*": {"origins": "*"}},
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 @app.route("/")
 def index():
@@ -38,11 +43,14 @@ def handle_exception(e):
     is_timeout = "timeout" in err_str or "connect" in err_str or "10060" in err_str
     print(f"[UNHANDLED ERROR] timeout={is_timeout}: {traceback.format_exc()}")
     
-    return jsonify({
+    response = jsonify({
         "error": "Internal server error", 
         "detail": str(e),
         "retry_suggested": is_timeout
-    }), 500
+    })
+    # Force CORS headers on error responses (crucial for "Failed to fetch" debugging)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 500
 
 storage = StorageService()
 ai = AIService()
@@ -121,7 +129,7 @@ def html_page(title, emoji, heading, body_html, link_href=None, link_text=None):
             position: fixed;
             inset: 0;
             z-index: -2;
-            background: url('http://localhost:5173/src/assets/auth_bg.png');
+            background: #061a15; /* Replaced localhost image with solid themed color */
             background-size: cover;
             background-position: center;
             transform: scale(1.05);
