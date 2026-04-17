@@ -10,7 +10,7 @@ export default function App() {
   useEffect(() => {
     // ── Early Warmup Ping ──
     // This wakes up the Supabase project as soon as the user opens the site.
-    fetch('https://ai-chatbot-lpap.onrender.com/api/workspaces').catch(() => {})
+    fetch('https://ai-chatbot-lpap.onrender.com/').catch(() => {})
   }, [])
   
   const [token, setToken] = useState(() => {
