@@ -18,9 +18,14 @@ from services.db_service import DBService
 from services.mail_service import MailService
 
 app = Flask(__name__)
-# ── Standard CORS: Configured for specified production front-end ──────────
-frontend_url = os.getenv("FRONTEND_BASE_URL", "*")
-CORS(app, resources={r"/*": {"origins": [frontend_url, "http://localhost:5173"]}})
+# ── Robust CORS: Allowing all Render subdomains to prevent preflight blocks ─
+import re
+CORS(app, resources={r"/*": {
+    "origins": [
+        "http://localhost:5173", 
+        re.compile(r"https://.*\.onrender\.com")
+    ]
+}})
 
 @app.route("/")
 def index():
@@ -35,6 +40,10 @@ def index():
 # ── Global error handler — always return JSON, never blank 500 ────────────
 @app.errorhandler(Exception)
 def handle_exception(e):
+    from werkzeug.exceptions import HTTPException
+    if isinstance(e, HTTPException) and e.code == 404:
+        return e # Let 404s stay 404s
+    
     import traceback
     err_str = str(e).lower()
     is_timeout = "timeout" in err_str or "connect" in err_str or "10060" in err_str
