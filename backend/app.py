@@ -69,11 +69,14 @@ try:
 except Exception:
     pass
 
-# Try to also seed by email for our main admin
+# Seed both known admin emails for the user
 try:
     if not db.get_user_by_email("gokulnathm.vtab@gmail.com"):
-        db.create_user("u_gokul", "gokulnathm.vtab@gmail.com",
+        db.create_user("u_gokul1", "gokulnathm.vtab@gmail.com",
                        generate_password_hash("Gokul@45"), "admin", None, "gokulnathm.vtab@gmail.com")
+    if not db.get_user_by_email("gokulnath96880@gmail.com"):
+        db.create_user("u_gokul2", "gokulnath96880@gmail.com",
+                       generate_password_hash("Gokul@45"), "admin", None, "gokulnath96880@gmail.com")
 except Exception:
     pass
 
