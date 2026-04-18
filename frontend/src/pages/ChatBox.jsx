@@ -41,6 +41,19 @@ function Stars({ rating }) {
 }
 
 export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkMode, onToggleTheme: propOnToggleTheme, initialView = 'chat' }) {
+  // ── Session Safety Guard: Prevent White Screen on Refresh crashes ─────────
+  if (!user && token) {
+    return (
+      <div className="min-h-screen bg-[#061a15] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-6"></div>
+        <h2 className="text-xl font-bold text-white mb-2">Restoring Secure Session...</h2>
+        <p className="text-emerald-500/60 text-sm font-medium">Re-hydrating your workspace environment from local cluster</p>
+      </div>
+    )
+  }
+
+  if (!user) return null
+
   // ── Retry Helper ────────────────────────────────────────────────────────
   const sleep = (ms) => new Promise(res => setTimeout(res, ms))
 
@@ -599,7 +612,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
         <div className="px-6 py-2.5 flex gap-1 flex-shrink-0 flex-wrap items-center border-b" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
           <button id="tab-chat" onClick={() => setView('chat')} className={tabBtnCls('chat')}>Chat</button>
           
-          {user.role === 'client' && (
+          {user?.role === 'client' && (
             <>
               <button id="tab-knowledge" onClick={() => setView('knowledge')} className={tabBtnCls('knowledge')}>Knowledge Base</button>
               <button id="tab-catalogue" onClick={() => setView('catalogue')} className={tabBtnCls('catalogue')}>Catalogue</button>
@@ -610,7 +623,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
 
           <button id="tab-settings" onClick={() => setView('settings')} className={tabBtnCls('settings')}>Bot Settings</button>
           
-          {user.role === 'admin' && (
+          {user?.role === 'admin' && (
             <button id="tab-onboarding" onClick={() => setView('onboarding')} className={tabBtnCls('onboarding')}>Onboarding</button>
           )}
 
@@ -661,8 +674,8 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {[
-                { id: 'total', label: 'Total Questions Asked', value: analytics.total_questions, color: 'text-primary' },
-                { id: 'unique', label: 'Unique Questions', value: analytics.unique_questions, color: 'text-emerald-400' }
+                { id: 'total', label: 'Total Questions Asked', value: analytics?.total_questions || 0, color: 'text-primary' },
+                { id: 'unique', label: 'Unique Questions', value: analytics?.unique_questions || 0, color: 'text-emerald-400' }
               ].map(stat => (
                 <div 
                   key={stat.id} 

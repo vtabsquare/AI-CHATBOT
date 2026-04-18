@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Sparkles, ChevronLeft, ChevronRight, Bot, User, LogOut, Moon, Sun, Search } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import WorkspaceItem from './WorkspaceItem'
 import ChatItem from './ChatItem'
 
@@ -12,6 +13,7 @@ export default function Sidebar({
 }) {
   const [hoveredCreateWs, setHoveredCreateWs] = useState(false)
   const [hoveredCreateChat, setHoveredCreateChat] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <motion.aside
@@ -196,7 +198,7 @@ export default function Sidebar({
           <motion.button
             whileHover={{ background: 'rgba(255,255,255,0.05)' }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => window.location.href = `/training-status/${activeWsId}`}
+            onClick={() => navigate(`/training-status/${activeWsId}`)}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left mb-2 text-emerald-500 hover:text-emerald-400"
           >
              <Sparkles size={16} />
