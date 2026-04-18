@@ -275,8 +275,8 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
 
       // 7. Fetch Analytics
       authFetch(`${API_BASE}/client/analytics?ws_id=${activeWsId}&days=${catalogueDays}`)
-        .then(r => r?.json())
-        .then(data => { if (data) setAnalytics(data) })
+        .then(r => r?.ok ? r.json() : null)
+        .then(data => { if (data && !data.error) setAnalytics(data) })
     }
     fetchWsData()
   }, [activeWsId])
@@ -285,17 +285,17 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
   useEffect(() => {
     if (isFirstRun.current || !activeWsId) return
     authFetch(`${API_BASE}/client/analytics?ws_id=${activeWsId}&days=${catalogueDays}`)
-      .then(r => r?.json())
-      .then(data => { if (data) setAnalytics(data) })
+      .then(r => r?.ok ? r.json() : null)
+      .then(data => { if (data && !data.error) setAnalytics(data) })
   }, [catalogueDays])
 
   // ── Fetch messages when active chat changes ──────────────────────────────
   useEffect(() => {
     if (!activeChatId) return
     authFetch(`${API_BASE}/chat_messages/${activeChatId}`)
-      .then(r => r?.json())
+      .then(r => r?.ok ? r.json() : null)
       .then(data => {
-        if (!data) return
+        if (!data || !Array.isArray(data)) return
         setMessages(prev => ({
           ...prev,
           [activeChatId]: data.map((m, i) => ({ id: i.toString(), role: m.role, content: m.content, timestamp: Date.now() }))
