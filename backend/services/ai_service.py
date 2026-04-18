@@ -144,7 +144,8 @@ class AIService:
         # ── STEP 1: Official Website Knowledge (RAG) ─────────────────────────
         context, score = self._search_knowledge(question, ws_id)
         
-        if context and score < 1.4:
+        # Strict filter: Only accept knowledge chunks that are mathematically relevant
+        if context and score < 0.90:
             safe_context = context.replace("http://localhost:3000", "[Our Website]")
             safe_context = safe_context.replace("http://", "").replace("https://", "")
             
@@ -152,26 +153,30 @@ class AIService:
                 f"SYSTEM: You are the friendly official AI Marketing Assistant for VTAB Square.\n"
                 f"CONTEXT: {safe_context}\n\n"
                 f"INSTRUCTIONS:\n"
-                f"1. Answer ONLY using the context. If not found, say you don't know.\n"
+                f"1. Answer ONLY using the context. If the answer is not in this context, output exactly the secret word [PASS_TO_INTERNET] and nothing else.\n"
                 f"2. Use ONLY 3-4 bullet points starting with '- '.\n"
                 f"3. Use **bold** for all key services, features, and names.\n"
                 f"4. NO paragraphs. NO intro sentences.\n\n"
                 f"QUESTION: {question}\n"
                 f"ANSWER:"
             )
-            return self._call_gemini(prompt)
+            ans = self._call_gemini(prompt)
+            if "[PASS_TO_INTERNET]" not in ans:
+                return ans
 
         # ── STEP 2: High-Capacity Context Fallback ────────────────────────────
         if raw_knowledge and len(raw_knowledge.strip()) > 10:
             safe_knowledge = raw_knowledge[:15000] 
             prompt = (
                 f"SYSTEM: You are the VTAB Square Business AI. Provide a simplified scan-friendly answer using 3-4 **bold** bullet points based on the Context below.\n"
-                f"RULES: Each bullet MUST start with a '*' on a NEW LINE. NO paragraphs. NO rambling.\n\n"
+                f"RULES: If the context does not contain the answer, output exactly the secret word [PASS_TO_INTERNET] and nothing else. Each bullet MUST start with a '*' on a NEW LINE. NO paragraphs. NO rambling.\n\n"
                 f"CONTEXT:\n{safe_knowledge}\n\n"
                 f"QUESTION: {question}\n"
                 f"ANSWER:"
             )
-            return self._call_gemini(prompt)
+            ans = self._call_gemini(prompt)
+            if "[PASS_TO_INTERNET]" not in ans:
+                return ans
 
         # ── STEP 3: Automatic Internet Fallback ──────────────────────────────
         internet_context = self._search_internet(question)
