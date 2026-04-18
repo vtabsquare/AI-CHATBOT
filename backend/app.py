@@ -20,12 +20,8 @@ from services.mail_service import MailService
 app = Flask(__name__)
 # ── Robust CORS: Allowing all Render subdomains to prevent preflight blocks ─
 import re
-CORS(app, resources={r"/*": {
-    "origins": [
-        "http://localhost:5173", 
-        re.compile(r"https://.*\.onrender\.com")
-    ]
-}})
+# ── Robust CORS: Allowing all domains so widgets can be embedded anywhere ──
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route("/")
 def index():
@@ -361,6 +357,10 @@ def manage_persona():
     ws_id = user['ws_id']
     if request.method == 'POST':
         data = request.json
+        # Admin override support
+        if data.get('ws_id'):
+            ws_id = data.get('ws_id')
+            
         db.update_bot_persona(
             ws_id, 
             data.get('bot_name'), 

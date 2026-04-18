@@ -1124,7 +1124,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                   onClick={async () => {
                     const r = await authFetch(`${API_BASE}/client/persona`, {
                       method: 'POST', headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify(botPersona)
+                      body: JSON.stringify({ ...botPersona, ws_id: activeWsId })
                     })
                     if (r?.ok) alert('✅ Bot identity and branding updated!')
                   }}
