@@ -153,7 +153,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
   const newQRef = useRef(null)
   const newARef = useRef(null)
 
-  // ── INIT: Fetch workspaces + admin data with Retry for Cold Starts ────────
+  // ── INIT: Fetch all dashboard data in a single 'Bulk' payload ──────────────
   useEffect(() => {
     let retryCount = 0;
     const maxRetries = 3;
@@ -161,11 +161,11 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
     const init = async () => {
       setIsInitialLoading(true)
       try {
-        const r = await authFetch(`${API_BASE}/workspaces`)
+        // Use the new Bulk Init API
+        const r = await authFetch(`${API_BASE}/dashboard/init${activeWsId ? `?ws_id=${activeWsId}` : ''}`)
         if (!r || !r.ok) {
           if (retryCount < maxRetries) {
             retryCount++;
-            console.log(`[INIT] Backend cold start? Retrying ${retryCount}/${maxRetries}...`);
             setTimeout(init, 2000);
             return;
           }
@@ -173,23 +173,38 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
           return;
         }
         
-        const wss = await r.json()
-        if (Array.isArray(wss)) {
-          setWorkspaces(wss)
-          if (wss.length > 0) setActiveWsId(wss[0].id)
-        }
+        const bundle = await r.json()
         
-        if (user?.role === 'admin') {
-          // Fetch Admin Metrics
-          authFetch(`${API_BASE}/admin/metrics`)
-            .then(r => r?.ok ? r.json() : null)
-            .then(d => { if(d) setAdminMetrics(d) })
-
-          // Fetch Onboarding Requests
-          authFetch(`${API_BASE}/admin/onboarding/all`)
-            .then(r => r?.ok ? r.json() : null)
-            .then(d => { if(d) setOnboardingRequests(d) })
+        // Populate Workspaces
+        if (bundle.workspaces) {
+          setWorkspaces(bundle.workspaces)
+          if (bundle.active_ws_id) {
+            setActiveWsId(bundle.active_ws_id)
+          }
         }
+
+        // Populate Admin Data
+        if (bundle.admin_data) {
+          if (bundle.admin_data.metrics) setAdminMetrics(bundle.admin_data.metrics)
+          if (bundle.admin_data.onboarding) setOnboardingRequests(bundle.admin_data.onboarding)
+        }
+
+        // Populate Workspace specific data (Initial Bundle)
+        if (bundle.workspace_data) {
+          const wsId = bundle.active_ws_id
+          const d = bundle.workspace_data
+          if (d.threads) {
+            setChats(p => ({ ...p, [wsId]: d.threads }))
+            if (d.threads.length > 0 && !activeChatId) setActiveChatId(d.threads[0].id)
+          }
+          if (d.knowledge) setKnowledgeItems(p => ({ ...p, [wsId]: d.knowledge }))
+          if (d.persona) setBotPersona(d.persona)
+          if (d.qa) setCustomQA(d.qa)
+          if (d.reviews) setReviews(d.reviews)
+          if (d.leads) setLeads(d.leads)
+          if (d.analytics) setAnalytics(d.analytics)
+        }
+
       } catch (err) {
         console.error("[INIT ERROR]", err);
         if (retryCount < maxRetries) {
@@ -197,24 +212,30 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
           setTimeout(init, 2000);
         }
       } finally {
-        if (retryCount >= maxRetries || workspaces.length > 0) {
-          setIsInitialLoading(false)
-        }
+        setIsInitialLoading(false)
       }
     }
     init()
-  }, [])
+  }, []) // Only run once on mount
 
-  // ── Fetch per-workspace data when active workspace changes ───────────────
+  // ── RE-FETCH: Only triggered when user MANUALLY switches workspaces ──────
+  // We use a ref to skip the very first run (which is handled by Init)
+  const isFirstRun = useRef(true)
+
   useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false
+      return
+    }
     if (!activeWsId) return
+    
     const fetchWsData = async () => {
-      // 1. Fetch Chat Threads (Individual block)
+      // 1. Fetch Chat Threads
       authFetch(`${API_BASE}/chat_threads/${activeWsId}`)
         .then(r => r?.ok ? r.json() : null)
-        .then(d => { if(d) { setChats(p => ({ ...p, [activeWsId]: d })); if (d.length > 0 && !activeChatId) setActiveChatId(d[0].id) }})
+        .then(d => { if(d) setChats(p => ({ ...p, [activeWsId]: d })) })
 
-      // 2. Fetch Knowledge (Individual block)
+      // 2. Fetch Knowledge
       authFetch(`${API_BASE}/knowledge/${activeWsId}`)
         .then(r => r?.ok ? r.json() : null)
         .then(d => { if(d) setKnowledgeItems(p => ({ ...p, [activeWsId]: d })) })
@@ -238,16 +259,22 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
       authFetch(`${API_BASE}/client/leads?ws_id=${activeWsId}`)
         .then(r => r?.ok ? r.json() : null)
         .then(d => { if(d) setLeads(d) })
+
+      // 7. Fetch Analytics
+      authFetch(`${API_BASE}/client/analytics?ws_id=${activeWsId}&days=${catalogueDays}`)
+        .then(r => r?.json())
+        .then(data => { if (data) setAnalytics(data) })
     }
     fetchWsData()
   }, [activeWsId])
 
-  // ── Standalone Analytics Refetcher ──
+  // Split effect for days filter (so it doesn't re-fetch everything only for analytics)
   useEffect(() => {
-    if (!activeWsId) return
+    if (isFirstRun.current || !activeWsId) return
     authFetch(`${API_BASE}/client/analytics?ws_id=${activeWsId}&days=${catalogueDays}`)
       .then(r => r?.json())
       .then(data => { if (data) setAnalytics(data) })
+  }, [catalogueDays])
   }, [activeWsId, catalogueDays])
 
   // ── Fetch messages when active chat changes ──────────────────────────────

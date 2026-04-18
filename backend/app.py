@@ -32,9 +32,14 @@ def index():
     return jsonify({
         "status": "Online",
         "service": "VTAB Square AI API",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "message": "Intelligence is active."
     })
+
+@app.route("/api/ping")
+def ping():
+    """Lightweight keep-alive endpoint."""
+    return jsonify({"status": "alive", "timestamp": uuid.uuid4().hex})
 
 
 # ── Global error handler — always return JSON, never blank 500 ────────────
@@ -380,6 +385,57 @@ def get_workspaces():
         filtered = [ws for ws in all_ws if ws['id'] == user['ws_id']]
         return jsonify(filtered)
     return jsonify(all_ws)
+
+# ── Bulk Dashboard Initialization (Performance Optimization) ─────────────────
+@app.route('/api/dashboard/init', methods=['GET'])
+@require_auth()
+def dashboard_init():
+    """Consolidates multiple setup fetches into a single high-speed payload."""
+    user = request.user
+    requested_ws_id = request.args.get('ws_id')
+    
+    # 1. Base Workspaces
+    all_ws = db.get_workspaces()
+    if user['role'] == 'client':
+        workspaces = [ws for ws in all_ws if ws['id'] == user['ws_id']]
+    else:
+        workspaces = all_ws
+
+    # 2. Determine targeted workspace data to include
+    active_ws_id = requested_ws_id
+    if not active_ws_id and workspaces:
+        active_ws_id = workspaces[0]['id']
+
+    payload = {
+        "workspaces": workspaces,
+        "active_ws_id": active_ws_id,
+        "admin_data": None,
+        "workspace_data": None
+    }
+
+    # 3. Admin-only globals
+    if user['role'] == 'admin':
+        payload["admin_data"] = {
+            "metrics": db.get_admin_metrics(),
+            "onboarding": db.get_onboarding_all()
+        }
+
+    # 4. Specific Workspace data (if ID is valid/authorized)
+    if active_ws_id:
+        if user['role'] == 'client' and user['ws_id'] != active_ws_id:
+            pass # Authorized check failed
+        else:
+            payload["workspace_data"] = {
+                "threads": db.get_chat_threads(active_ws_id),
+                "knowledge": db.get_knowledge_items(active_ws_id),
+                "persona": db.get_workspace_config(active_ws_id),
+                "qa": db.get_custom_qa(active_ws_id),
+                "reviews": db.get_bot_reviews(active_ws_id),
+                "leads": db.get_leads_by_workspace(active_ws_id),
+                "analytics": db.get_client_analytics(active_ws_id)
+            }
+
+    return jsonify(payload)
 
 @app.route('/api/workspace/<ws_id>', methods=['PUT'])
 @require_auth()
