@@ -5,15 +5,19 @@ import ChatMessage from './ChatMessage'
 import TypingIndicator from './TypingIndicator'
 import LoadingSkeleton from './LoadingSkeleton'
 
-const PROMPTS = [
-  'What services do you offer?',
-  'How can I get started?',
-  'Tell me about your pricing.',
-  'What makes you unique?',
-]
-
-export default function ChatArea({ messages, isTyping, isLoading, onPromptClick, activeKnowledge = [], botName = 'AI', isDarkMode = true }) {
+export default function ChatArea({ messages, isTyping, isLoading, onPromptClick, activeKnowledge = [], botName = 'AI', isDarkMode = true, customQA = [] }) {
   const bottomRef = useRef(null)
+
+  // Use custom QA questions if available, otherwise fallback to defaults
+  const displayPrompts = customQA.length > 0 
+    ? customQA.map(qa => qa.question) 
+    : [
+        'What services do you offer?',
+        'How can I get started?',
+        'Tell me about your pricing.',
+        'What makes you unique?',
+      ]
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -52,7 +56,7 @@ export default function ChatArea({ messages, isTyping, isLoading, onPromptClick,
 
           {/* Suggestion chips */}
           <div className="flex flex-wrap gap-2 justify-center max-w-sm">
-            {PROMPTS.map((p, i) => (
+            {displayPrompts.map((p, i) => (
               <motion.button
                 key={i}
                 initial={{ opacity: 0, y: 10 }}

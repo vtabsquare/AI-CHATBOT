@@ -633,7 +633,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
         {/* ── CHAT VIEW ── */}
         {view === 'chat' && (
           <>
-            <ChatArea messages={activeMessages} isTyping={isTyping} onPromptClick={handleSend} activeKnowledge={activeKnowledge} botName={botPersona.bot_name || 'AI'} isDarkMode={isDarkMode} />
+            <ChatArea messages={activeMessages} isTyping={isTyping} onPromptClick={handleSend} activeKnowledge={activeKnowledge} botName={botPersona.bot_name || 'AI'} isDarkMode={isDarkMode} customQA={customQA || []} />
             <ChatInput user={user} onSend={handleSend} isTyping={isTyping}
               onOpenUpload={(tab) => { setUploadTab(tab); setUploadModalOpen(true) }}
               activeContext={activeKnowledge}
@@ -695,7 +695,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
               <h3 className="text-sm font-bold text-primary mb-5 uppercase tracking-wider">
                 {catalogueFilter === 'unique' ? 'Unique Questions Asked by Users' : 'Full Question History'}
               </h3>
-              {(catalogueFilter === 'unique' ? analytics.unique_question_list : analytics.total_question_list)?.length === 0 ? (
+              {(!analytics || (catalogueFilter === 'unique' ? analytics.unique_question_list : analytics.total_question_list)?.length === 0) ? (
                 <p className="text-slate-500 text-sm">No questions yet. Share your widget to start collecting insights.</p>
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar pr-2">
