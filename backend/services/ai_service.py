@@ -92,18 +92,7 @@ class AIService:
             print(f"[AIService] Gemini API Error: {e}")
             return "I'm sorry, I'm having trouble connecting to my brain right now. Please try again soon!"
 
-    def _search_internet(self, question):
-        """Search the internet using DuckDuckGo as a fallback."""
-        try:
-            from duckduckgo_search import DDGS
-            with DDGS() as ddgs:
-                results = list(ddgs.text(question, max_results=3))
-                if not results:
-                    return ""
-                return "\n".join([f"- {r.get('body', '')}" for r in results if r.get('body')])
-        except Exception as e:
-            print(f"[AIService] Internet search error: {e}")
-            return ""
+
 
     def _match_custom_qa(self, question, custom_qa_list):
         """Finds the best fuzzy match for a question in the custom Q&A list."""
@@ -178,17 +167,11 @@ class AIService:
             if "[PASS_TO_INTERNET]" not in ans:
                 return ans
 
-        # ── STEP 3: Automatic Internet Fallback ──────────────────────────────
-        internet_context = self._search_internet(question)
-        if internet_context:
-            prompt = (
-                f"SYSTEM: You are the VTAB Square AI representative. Provide a professional answer using 3-4 **bold** bullet points.\n"
-                f"RULES: Each bullet MUST start with a '*' on a NEW LINE. Simplify the research below.\n\n"
-                f"RESEARCH:\n{internet_context}\n\n"
-                f"QUESTION: {question}\n\n"
-                f"ANSWER:"
-            )
-            return self._call_gemini(prompt)
-
-        return ("I'm sorry, I couldn't find a definitive answer for that in our records. "
-                "Please reach out to our team directly for more specific info!")
+        # ── STEP 3: General Knowledge Fallback (Gemini Internal Brain) ──────────
+        prompt = (
+            f"SYSTEM: You are the VTAB Square AI representative. Provide a helpful, professional answer to the user's general knowledge question.\n"
+            f"RULES: Use ONLY 3-4 **bold** bullet points starting with '- '. Be concise, deeply informative, and friendly.\n\n"
+            f"QUESTION: {question}\n\n"
+            f"ANSWER:"
+        )
+        return self._call_gemini(prompt)
