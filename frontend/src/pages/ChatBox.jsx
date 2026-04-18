@@ -275,7 +275,6 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
       .then(r => r?.json())
       .then(data => { if (data) setAnalytics(data) })
   }, [catalogueDays])
-  }, [activeWsId, catalogueDays])
 
   // ── Fetch messages when active chat changes ──────────────────────────────
   useEffect(() => {
