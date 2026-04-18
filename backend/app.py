@@ -997,7 +997,7 @@ def approve_onboarding(token):
         f"<b>Login Email:</b> {req['email']}<br/>"
         f"<b>Temporary Password:</b> <span style='font-family:monospace; font-weight:bold;'>{temp_pw}</span><br/><br/>"
         "Please change your password after first login.",
-        link_href="http://localhost:5173/login",
+        link_href=os.getenv("FRONTEND_BASE_URL", "https://chatbot-dashboard-k498.onrender.com") + "/login",
         link_text="Go to Dashboard →"
     )
 
