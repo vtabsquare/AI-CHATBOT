@@ -87,9 +87,13 @@ class AIService:
                 return response.text.strip()
             return "I'm sorry, I couldn't generate a proper response right now."
         except Exception as e:
+            err_str = str(e)
             with open("live_error.txt", "w") as f:
-                f.write(f"LIVE STABLE ERROR: {str(e)}")
-            print(f"[AIService] Gemini API Error: {e}")
+                f.write(f"LIVE STABLE ERROR: {err_str}")
+            print(f"[AIService] Gemini API Error: {err_str}")
+            
+            if "Quota exceeded" in err_str or "429" in err_str:
+                return "Whoa, slow down! I hit my free-tier speed limit. Please wait about 15 seconds and ask me again! 🚦"
             return "I'm sorry, I'm having trouble connecting to my brain right now. Please try again soon!"
 
 
