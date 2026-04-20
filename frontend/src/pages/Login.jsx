@@ -5,8 +5,9 @@ import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import bgImage from '../assets/auth_bg.png'
 
 export default function Login({ onLogin }) {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => localStorage.getItem('vtab_remember_email') || '')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(() => !!localStorage.getItem('vtab_remember_email'))
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -27,6 +28,12 @@ export default function Login({ onLogin }) {
       
       if (!res.ok) {
         throw new Error(data.error || 'Login Failed')
+      }
+      
+      if (rememberMe) {
+        localStorage.setItem('vtab_remember_email', email)
+      } else {
+        localStorage.removeItem('vtab_remember_email')
       }
       
       onLogin(data.token, data.user)
@@ -114,9 +121,22 @@ export default function Login({ onLogin }) {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <div className="flex justify-end pr-2">
+            <div className="flex justify-between items-center px-1">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div 
+                  onClick={() => setRememberMe(!rememberMe)}
+                  className={`w-4 h-4 rounded border transition-all flex items-center justify-center ${
+                    rememberMe ? 'bg-emerald-500 border-emerald-500' : 'border-white/20 group-hover:border-white/40'
+                  }`}
+                >
+                  {rememberMe && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                </div>
+                <span className="text-[11px] font-medium opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--nature-text)' }}>
+                  Remember me
+                </span>
+              </label>
               <Link to="/forgot-password" 
-                className="text-[12px] font-medium opacity-70 hover:opacity-100 transition-opacity"
+                className="text-[11px] font-medium opacity-70 hover:opacity-100 transition-opacity"
                 style={{ color: 'var(--nature-text)' }}>
                 Forgot password?
               </Link>

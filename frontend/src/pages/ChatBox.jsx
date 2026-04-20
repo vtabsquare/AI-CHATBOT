@@ -483,13 +483,13 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
   }
 
   // ── CSS shorthand helpers ─────────────────────────────────────────────────
-  const cardCls   = `p-6 rounded-[32px] bg-stone-900/40 border border-white/5 shadow-2xl backdrop-blur-xl transition-all relative overflow-hidden group`
-  const inputCls  = `w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-all`
-  const selectCls = `bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white outline-none focus:border-emerald-500/50`
+  const cardCls   = `p-6 rounded-[32px] bg-surface/40 border border-subtle shadow-2xl backdrop-blur-xl transition-all relative overflow-hidden group`
+  const inputCls  = `w-full bg-surface border border-subtle rounded-2xl px-5 py-3 text-sm text-primary focus:border-emerald-500/50 outline-none transition-all placeholder:text-muted/50`
+  const selectCls = `bg-surface border border-subtle rounded-xl px-4 py-2 text-xs text-primary outline-none focus:border-emerald-500/50 cursor-pointer`
   const tabBtnCls = (v) => `px-4 py-2 rounded-xl text-xs font-bold transition-all ${
     view === v
       ? isDarkMode ? 'bg-[#064e40] text-[#10b981] shadow-lg shadow-emerald-500/10 border border-emerald-500/20' 
-                   : 'bg-emerald-50 text-emerald-700 shadow-md border border-emerald-200'
+                   : 'bg-emerald-600 text-white shadow-md border border-emerald-700'
       : 'text-muted hover:text-primary hover:bg-surface'
   }`
 
@@ -544,7 +544,13 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
           ]
           const today = new Date().toLocaleDateString()
           const panelClients = {
-            total_clients: onboardingRequests,
+            total_clients: workspaces.map(w => ({ 
+              id: w.ws_id, 
+              workspace_name: w.name, 
+              email: w.owner_email || 'Verified Workspace', 
+              ceo_name: 'Owner', 
+              status: w.status || 'approved' 
+            })),
             new_today:     onboardingRequests.filter(r => new Date(r.created_at).toLocaleDateString() === today),
             retention:     onboardingRequests.filter(r => r.status === 'approved'),
           }
@@ -560,11 +566,11 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                       background: m.bg,
                       border: `1px solid ${metricPanel === m.key ? m.color : m.border}`,
                       cursor: 'pointer',
-                      boxShadow: metricPanel === m.key ? `0 0 10px ${m.bg}` : 'none',
+                      boxShadow: metricPanel === m.key ? `0 0 15px ${m.color}20` : 'none',
                     }}
                   >
-                    <span className="text-[8px] font-black uppercase tracking-[0.18em]" style={{ color: m.color, opacity: 0.85 }}>{m.label}</span>
-                    <span className="text-lg font-black mt-0.5 leading-none" style={{ color: m.color }}>{m.value}</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.18em]" style={{ color: m.color, opacity: 1 }}>{m.label}</span>
+                    <span className="text-xl font-bold mt-0.5 leading-none" style={{ color: m.color }}>{m.value}</span>
                   </button>
                 ))}
               </div>
@@ -583,10 +589,10 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                   }}
                 >
                   <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-xs font-black uppercase tracking-widest text-primary">
                       {metricDefs.find(d => d.key === metricPanel)?.label} — Client Details
                     </span>
-                    <button onClick={() => setMetricPanel(null)} className="text-xs px-3 py-1 rounded-full hover:bg-white/10 transition-colors" style={{ color: 'var(--text-muted)' }}>✕ Close</button>
+                    <button onClick={() => setMetricPanel(null)} className="text-xs px-3 py-1 rounded-full hover:bg-black/10 transition-colors text-primary">✕ Close</button>
                   </div>
                   <div className="max-h-48 overflow-y-auto divide-y" style={{ divideColor: 'var(--border-subtle)' }}>
                     {(panelClients[metricPanel] || []).length === 0 ? (
@@ -599,8 +605,8 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                             {(req.ceo_name || req.workspace_name || '?')[0].toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{req.workspace_name}</div>
-                            <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{req.ceo_name} · {req.email}</div>
+                            <div className="text-sm font-bold truncate text-primary">{req.workspace_name}</div>
+                            <div className="text-xs font-medium text-secondary">{req.ceo_name} · {req.email}</div>
                           </div>
                           <StatusBadge status={req.status} />
                         </div>
@@ -660,7 +666,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                 </h2>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-slate-500 hidden md:block">Filter Period:</span>
+                <span className="text-[10px] font-bold text-muted hidden md:block">Filter Period:</span>
                 <select value={catalogueDays} onChange={(e) => setCatalogueDays(e.target.value)} className={selectCls}>
                   <option value="today">Present Day</option>
                   <option value="3">Last 3 Days</option>
@@ -687,7 +693,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                   onClick={() => setCatalogueFilter(stat.id)}
                   className={`${cardCls} cursor-pointer transition-all group ${catalogueFilter === stat.id ? 'ring-1 ring-emerald-500 bg-emerald-500/5' : 'hover:bg-accent-glow'}`}
                 >
-                  <div className="text-[10px] font-black group-hover:text-emerald-400 text-slate-500 uppercase tracking-widest mb-2 transition-colors">
+                  <div className="text-[10px] font-black group-hover:text-emerald-400 text-muted uppercase tracking-widest mb-2 transition-colors">
                     {stat.label}
                   </div>
                   <div className={`text-5xl font-bold ${stat.color}`}>{stat.value}</div>
@@ -701,7 +707,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                 {catalogueFilter === 'unique' ? 'Unique Questions Asked by Users' : 'Full Question History'}
               </h3>
               {(!analytics || (catalogueFilter === 'unique' ? analytics.unique_question_list : analytics.total_question_list)?.length === 0) ? (
-                <p className="text-slate-500 text-sm">No questions yet. Share your widget to start collecting insights.</p>
+                <p className="text-muted text-sm">No questions yet. Share your widget to start collecting insights.</p>
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar pr-2">
                   {(catalogueFilter === 'unique' ? analytics.unique_question_list : analytics.total_question_list)?.map((q, i) => (
@@ -722,7 +728,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
         {view === 'qa' && (
           <div className="flex-1 p-10 overflow-y-auto">
             <h2 className="text-3xl font-bold text-primary mb-8">🤖 Custom Bot Questions</h2>
-            <p className="text-slate-400 text-sm mb-6">
+            <p className="text-secondary text-sm mb-6">
               These questions will appear as quick-link chips in your chatbot. Users can tap them to get instant answers.
             </p>
 
@@ -794,7 +800,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                 </h2>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-slate-500 hidden md:block">Timeframe:</span>
+                <span className="text-[10px] font-bold text-muted hidden md:block">Timeframe:</span>
                 <select value={reviewDays} onChange={(e) => { setReviewDays(e.target.value); setLeadsDays(e.target.value); }} className={selectCls}>
                   <option value="today">Present Day</option>
                   <option value="3">Last 3 Days</option>
@@ -812,7 +818,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
               <div className={`${cardCls} relative overflow-hidden group`}>
-                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-70">Total Users Identified</div>
+                <div className="text-[10px] font-black text-muted uppercase tracking-widest mb-1 opacity-70">Total Users Identified</div>
                 <div className="text-5xl font-black text-primary">{filteredLeads.length}</div>
               </div>
               <div className={`${cardCls} relative overflow-hidden group`}>
@@ -822,10 +828,10 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
             </div>
 
             {filteredLeads.length === 0 ? (
-              <div className="text-center py-20 border-2 border-dashed border-subtle rounded-[40px] text-slate-500">
-                <div className="text-6xl mb-4 opacity-50">✨</div>
-                <p className="font-black text-primary text-xl">Pristine Record</p>
-                <p className="text-sm mt-1 max-w-sm mx-auto">Customer details will appear here automatically when they identify themselves via the bot.</p>
+              <div className="text-center py-20 border-2 border-dashed border-subtle rounded-[40px] text-primary">
+                <div className="text-6xl mb-4 opacity-30">✨</div>
+                <p className="font-black text-xl">Pristine Record</p>
+                <p className="text-sm mt-1 max-w-sm mx-auto text-secondary">Customer details will appear here automatically when they identify themselves via the bot.</p>
               </div>
             ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -910,7 +916,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                       Website Integration
                     </div>
                     <h3 className="text-lg font-black text-primary mb-2">Deploy your Chatbot</h3>
-                    <p className="text-slate-500 text-xs leading-relaxed max-w-lg">
+                    <p className="text-muted text-xs leading-relaxed max-w-lg">
                       Copy the code snippet below and paste it into the <code className="text-emerald-500 font-bold bg-white/5 px-2 py-0.5 rounded">&lt;head&gt;</code> or <code className="text-emerald-500 font-bold bg-white/5 px-2 py-0.5 rounded">&lt;body&gt;</code> of your website.
                     </p>
                   </div>
@@ -924,23 +930,23 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
                       setTimeout(() => setCopySuccess(false), 2000);
                     }}
                     className={`flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${
-                      copySuccess ? 'bg-emerald-500 text-white' : 'bg-white/10 hover:bg-white/20 text-primary border border-white/10'
+                      copySuccess ? 'bg-emerald-500 text-white' : 'bg-white/10 hover:bg-white/20 text-primary border border-medium'
                     }`}
                   >
                     {copySuccess ? '✅ Copied to Clipboard!' : '📋 Copy Widget Script'}
                   </button>
                 </div>
 
-                <div className="mt-6 p-5 rounded-2xl bg-black/40 border border-white/5 font-mono text-[10px] md:text-sm text-emerald-400/80 break-all leading-relaxed shadow-inner select-all">
-                  <span className="text-slate-500">&lt;</span>
+                <div className="mt-6 p-5 rounded-2xl bg-black/40 border border-subtle font-mono text-[10px] md:text-sm text-emerald-400/80 break-all leading-relaxed shadow-inner select-all">
+                  <span className="text-muted">&lt;</span>
                   <span className="text-emerald-400">script</span>
-                  <span className="text-slate-400"> src=</span>
+                  <span className="text-secondary"> src=</span>
                   <span className="text-amber-300">"{window.location.origin.replace(':5173', ':5000')}/static/widget.js"</span>
-                  <span className="text-slate-400"> data-business-id=</span>
+                  <span className="text-secondary"> data-business-id=</span>
                   <span className="text-amber-300">"{activeWsId}"</span>
-                  <span className="text-slate-500">&gt;&lt;/</span>
+                  <span className="text-muted">&gt;&lt;/</span>
                   <span className="text-emerald-400">script</span>
-                  <span className="text-slate-500">&gt;</span>
+                  <span className="text-muted">&gt;</span>
                 </div>
               </div>
 
@@ -962,7 +968,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
 
             <div className="space-y-4">
               {activeKnowledge.length === 0 ? (
-                <div className="text-center py-20 border-2 border-dashed border-subtle rounded-[40px] text-slate-500">
+                <div className="text-center py-20 border-2 border-dashed border-subtle rounded-[40px] text-muted">
                   <div className="text-6xl mb-4 opacity-30">📚</div>
                   <p className="font-black text-primary text-xl">Your AI is empty</p>
                   <p className="text-sm mt-1 max-w-sm mx-auto">Upload a File or paste a Website URL to start training your bot.</p>
@@ -1017,7 +1023,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
           <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-primary">Bot Identity</h2>
-              <p className="text-slate-500 text-sm mt-1">Customize how your chatbot introduces itself to customers.</p>
+              <p className="text-muted text-sm mt-1">Customize how your chatbot introduces itself to customers.</p>
             </div>
             
             <div className="max-w-4xl mx-auto space-y-8">
@@ -1185,7 +1191,7 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
 
             <div className="space-y-4">
               {filteredOnboarding.length === 0 ? (
-                <div className="p-16 text-center border-2 border-dashed border-subtle rounded-[40px] text-slate-500 font-bold">
+                <div className="p-16 text-center border-2 border-dashed border-subtle rounded-[40px] text-muted font-bold">
                   No onboarding requests yet.
                 </div>
               ) : (

@@ -29,22 +29,30 @@
 }
 
 .theme-light {
-  --bg-base: #f1f5f3;
+  --bg-base: #f4f7f6;
   --bg-surface: #ffffff;
-  --bg-elevated: #f8faf9;
-  --bg-glass: rgba(255, 255, 255, 0.7);
-  --bg-glass-hover: rgba(5, 150, 105, 0.05);
-  --border-subtle: #dae5e0;
-  --border-medium: #c0d1c9;
+  --bg-elevated: #fcfdfe;
+  --bg-glass: rgba(255, 255, 255, 0.75);
+  --bg-glass-hover: rgba(5, 150, 105, 0.04);
+  --border-subtle: #d1d9d6;
+  --border-medium: #b8c4bf;
   --accent-primary: #059669;
-  --accent-secondary: #064e40;
-  --accent-glow: rgba(5, 150, 105, 0.15);
-  --accent-user: #e2edea;
-  --text-primary: #061a15;
-  --text-secondary: #1a3d36;
-  --text-muted: #4a635e;
+  --accent-secondary: #065f46;
+  --accent-glow: rgba(5, 150, 105, 0.12);
+  --accent-user: #e9f2f0;
+  --text-primary: #020d0b;
+  --text-secondary: #0f2c27;
+  --text-muted: #3a4d49;
   --shadow-glass: 0 10px 40px rgba(10,46,40,0.06), inset 0 1px 0 #ffffff;
-  --shadow-elevated: 0 20px 80px rgba(10,46,40,0.12);
+  --shadow-elevated: 0 20px 80px rgba(10,46,40,0.1);
+
+  /* Nature Theme Tokens (Light Mode override) */
+  --nature-bg: #eff3f2;
+  --nature-accent: #059669;
+  --nature-field: rgba(0, 0, 0, 0.05);
+  --nature-text: #020d0b;
+  --nature-muted: #3a4d49;
+  --nature-glass: rgba(255, 255, 255, 0.85);
 }
 
 *, *::before, *::after { box-sizing: border-box; }

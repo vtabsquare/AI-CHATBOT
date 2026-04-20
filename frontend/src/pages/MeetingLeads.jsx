@@ -82,7 +82,7 @@ const MeetingLeads = ({ wsId, token }) => {
            </div>
            <h1 className="text-3xl font-black text-primary">Meeting Requests</h1>
         </div>
-        <p className="text-slate-500 text-sm">Review and follow up with high-intent leads who requested a call via the chatbot.</p>
+        <p className="text-secondary text-sm">Review and follow up with high-intent leads who requested a call via the chatbot.</p>
       </div>
 
       {/* Stats Summary */}
@@ -124,7 +124,7 @@ const MeetingLeads = ({ wsId, token }) => {
         <div className="overflow-x-auto">
           {filteredBookings.length === 0 ? (
             <div className="p-20 text-center flex flex-col items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-slate-500/10 flex items-center justify-center text-slate-500">
+              <div className="w-16 h-16 rounded-full bg-muted/10 flex items-center justify-center text-secondary">
                 <MessageSquare size={32} />
               </div>
               <div>

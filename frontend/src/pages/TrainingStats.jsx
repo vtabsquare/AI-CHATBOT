@@ -112,7 +112,7 @@ const TrainingStats = ({ wsId, token, isDarkMode }) => {
            </div>
            <h1 className="text-3xl font-black text-primary">Intelligence & Training</h1>
         </div>
-        <p className="text-slate-500 text-sm">Real-time status of your bot's knowledge base and website synchronization.</p>
+        <p className="text-secondary text-sm">Real-time status of your bot's knowledge base and website synchronization.</p>
       </div>
 
       {/* Hero Stats */}
@@ -139,7 +139,7 @@ const TrainingStats = ({ wsId, token, isDarkMode }) => {
           color="purple"
         />
         <div className={`p-6 rounded-[32px] border shadow-xl flex flex-col justify-between ${
-          gaps.status === 'url_missing' ? 'bg-slate-500/5 text-slate-500 border-slate-500/20' :
+          gaps.status === 'url_missing' ? 'bg-slate-500/5 text-secondary border-muted/10' :
           gaps.gap_count > 0 ? 'from-amber-400/20 to-amber-400/5 text-amber-500 border-amber-500/20 bg-gradient-to-br transition-all' :
           'from-emerald-500/10 to-emerald-500/5 text-emerald-500 border-emerald-500/20 bg-gradient-to-br transition-all'
         }`}>
