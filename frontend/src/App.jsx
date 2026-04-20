@@ -5,6 +5,7 @@ import Login               from './pages/Login'
 import Landing             from './pages/Landing'
 import ForgotPassword      from './pages/ForgotPassword'
 import ForceChangePassword from './pages/ForceChangePassword'
+import MeetingLeads        from './pages/MeetingLeads'
 
 export default function App() {
   useEffect(() => {
@@ -105,6 +106,18 @@ export default function App() {
           element={
             token && (user?.role === 'admin' || user?.role === 'client') ? (
               <ChatBox token={token} user={user} onLogout={handleLogout} isDarkMode={isDarkMode} onToggleTheme={toggleTheme} initialView="training" />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* Meeting Leads — Admin Only */}
+        <Route
+          path="/meeting-leads/:wsId"
+          element={
+            token && user?.role === 'client' ? (
+              <ChatBox token={token} user={user} onLogout={handleLogout} isDarkMode={isDarkMode} onToggleTheme={toggleTheme} initialView="bookings" />
             ) : (
               <Navigate to="/login" />
             )

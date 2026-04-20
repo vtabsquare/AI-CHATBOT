@@ -153,7 +153,7 @@
                 <div id="saas-chat-messages"></div>
                 <div id="saas-chat-quick-links" style="opacity: 0; display: none; transition: opacity 0.5s; flex-wrap: wrap; gap: 8px; padding: 10px 20px;">
                     ${quickQuestions.map(q => `<button class="saas-chip">${q}</button>`).join('')}
-                    <button class="saas-chip saas-chip-review" style="background: var(--saas-accent-low); border-color: var(--saas-accent); color: var(--saas-accent);">⭐ Leave a Review</button>
+                    <button class="saas-chip saas-chip-review" id="saas-btn-review" style="background: var(--saas-accent-low); border-color: var(--saas-accent); color: var(--saas-accent);">⭐ Leave a Review</button>
                 </div>
                 <div id="saas-chat-input-container">
                     <div class="saas-input-wrapper">
@@ -233,13 +233,24 @@
                 
                 if (quickLinks) {
                     quickLinks.style.display = 'flex';
-                    setTimeout(() => { quickLinks.style.opacity = '1'; }, 10);
+                    setTimeout(() => { 
+                        quickLinks.style.opacity = '1'; 
+                        // UX Update: Hide review button if already submitted
+                        const revBtn = document.getElementById('saas-btn-review');
+                        if (revBtn && sessionStorage.getItem(`saas_review_submitted_${businessId}`)) {
+                            revBtn.style.display = 'none';
+                        }
+                    }, 10);
                 }
 
                 const hasHistory = loadChatHistory();
                 if (!hasHistory) {
                     messagesDiv.innerHTML = ''; // Clear the "pre-capture" greeting to avoid duplication
                     addMessage(`Hi! I am <strong>${botName}</strong>, ${botGreeting}`, 'ai', true);
+                } else if (quickLinks) {
+                    // UX Update: If history exists, hide standard chips immediately on load
+                    const chips = quickLinks.querySelectorAll('.saas-chip:not(.saas-chip-review)');
+                    chips.forEach(c => c.style.display = 'none');
                 }
             } else {
                 if (messagesDiv.children.length === 0) {
@@ -341,6 +352,10 @@
                             user_email: userEmail
                         })
                     });
+                    sessionStorage.setItem(`saas_review_submitted_${businessId}`, 'true');
+                    const revBtn = document.getElementById('saas-btn-review');
+                    if (revBtn) revBtn.style.display = 'none';
+                    
                     wrap.querySelector('.saas-lead-form').style.display = 'none';
                     wrap.querySelector('.saas-review-thanks').style.display = 'block';
                 } catch(e) {
@@ -349,6 +364,103 @@
                     submitBtn.textContent = "Submit Review";
                 }
             });
+        }
+
+        // ======================= CALL BOOKING =======================
+        let bookingStep = 0; // 1: dates, 2: timing, 3: email, 4: done
+        let bookingData = { name: '', email: '', business_id: businessId, date: '', time: '' };
+
+        function addBookingForm() {
+            if (document.querySelector('.saas-booking-container')) return;
+            const wrap = document.createElement('div');
+            wrap.className = 'saas-booking-container';
+            wrap.innerHTML = `
+                <div class="saas-lead-card" style="border: 2px solid #a855f7; box-shadow: 0 0 30px rgba(168,85,247,0.15); margin: 20px 0;">
+                    <div class="saas-lead-header">
+                        <div class="saas-lead-title" style="color: var(--saas-text);">Set a Call with our Team</div>
+                        <div style="font-size: 10px; color: #a855f7; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Premium Concierge Active</div>
+                    </div>
+                    <div class="saas-booking-step-1" style="padding: 20px; text-align: center;">
+                        <p style="color: var(--saas-text); font-size: 13px; margin-bottom: 20px; font-weight: 600;">Would you like to schedule a quick call to discuss your queries with our experts?</p>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button id="saas-book-yes" style="background: #a855f7; color: #fff; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase;">Yes, Let's Chat</button>
+                            <button id="saas-book-no" style="background: var(--saas-input-bg); color: var(--saas-text-muted); padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase;">Not Now</button>
+                        </div>
+                    </div>
+                    <div class="saas-booking-form" style="display: none; padding: 0 20px 20px 20px;">
+                        <div class="saas-input-group">
+                            <label id="saas-booking-label" style="color: var(--saas-text-muted);">When are you available? (2-3 preferred dates)</label>
+                            <input type="text" id="saas-booking-input" placeholder="e.g. Next Monday or Tuesday" style="background: var(--saas-input-bg); color: var(--saas-text); border: 1px solid var(--saas-border); width: 100%; padding: 12px; border-radius: 12px; box-sizing: border-box;">
+                        </div>
+                        <button id="saas-booking-next" style="background: #a855f7; color: #fff; width: 100%; margin-top: 15px;">Next Step →</button>
+                    </div>
+                    <div class="saas-booking-thanks" style="display:none; color:var(--saas-text); text-align:center; padding:20px; font-weight:800; text-transform:uppercase; font-size: 12px;">
+                        Request Received. <br/> <span style="font-size: 10px; opacity: 0.7;">We will contact you shortly.</span>
+                    </div>
+                </div>
+            `;
+            messagesDiv.appendChild(wrap);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            const step1 = wrap.querySelector('.saas-booking-step-1');
+            const form = wrap.querySelector('.saas-booking-form');
+            const input = wrap.querySelector('#saas-booking-input');
+            const label = wrap.querySelector('#saas-booking-label');
+            const nextBtn = wrap.querySelector('#saas-booking-next');
+            const thanks = wrap.querySelector('.saas-booking-thanks');
+
+            wrap.querySelector('#saas-book-yes').onclick = () => {
+                step1.style.display = 'none';
+                form.style.display = 'block';
+                input.focus();
+                bookingStep = 1;
+            };
+            wrap.querySelector('#saas-book-no').onclick = () => {
+                wrap.remove();
+                sessionStorage.setItem(`saas_booking_offered_${businessId}`, 'true');
+            };
+
+            nextBtn.onclick = async () => {
+                const val = input.value.trim();
+                if (!val) return alert("Please provide details.");
+
+                if (bookingStep === 1) {
+                    bookingData.date = val;
+                    label.innerText = "What time works best for you?";
+                    input.placeholder = "e.g. 2 PM or Morning";
+                    input.value = "";
+                    bookingStep = 2;
+                } else if (bookingStep === 2) {
+                    bookingData.time = val;
+                    label.innerText = "Confirm your contact email:";
+                    input.placeholder = "john@example.com";
+                    input.value = sessionStorage.getItem(`saas_lead_email_${businessId}`) || "";
+                    bookingStep = 3;
+                } else if (bookingStep === 3) {
+                    bookingData.email = val;
+                    bookingData.name = sessionStorage.getItem(`saas_lead_name_${businessId}`) || "Lead";
+                    
+                    nextBtn.disabled = true;
+                    nextBtn.innerText = "Securing Slot...";
+                    
+                    try {
+                        const res = await fetch(`${HOST}/api/widget/booking`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(bookingData)
+                        });
+                        if (res.ok) {
+                            form.style.display = 'none';
+                            thanks.style.display = 'block';
+                            sessionStorage.setItem(`saas_booking_offered_${businessId}`, 'true');
+                        }
+                    } catch(e) {
+                        alert("Network error. Please try again.");
+                        nextBtn.disabled = false;
+                        nextBtn.innerText = "Next Step →";
+                    }
+                }
+            };
         }
 
         // ======================= LEADS =======================
@@ -491,11 +603,10 @@
             const text = manualText || inputField.value.trim();
             if (!text) return;
             
-            // Never hide the review link entirely, just standard chips
+            // 1. UX Improvement: Hide standard chips once the first question is asked
             if (quickLinks) {
-                Array.from(quickLinks.children).forEach(c => {
-                    if (!c.classList.contains('saas-chip-review')) c.style.display = 'none';
-                });
+                const chips = quickLinks.querySelectorAll('.saas-chip:not(.saas-chip-review)');
+                chips.forEach(c => c.style.display = 'none');
             }
             
             addMessage(text, 'user', true);
@@ -517,6 +628,15 @@
                 if (data.response) {
                     if (data.chat_id) sessionStorage.setItem(`saas_chat_id_${businessId}`, data.chat_id);
                     addMessage(data.response, 'ai', true);
+                    
+                    // 2. Intelligence: Proactive Call Booking Trigger (After 3 or more AI messages if not offered)
+                    let aiCount = parseInt(sessionStorage.getItem(`saas_ai_msg_count_${businessId}`) || '0');
+                    aiCount++;
+                    sessionStorage.setItem(`saas_ai_msg_count_${businessId}`, aiCount.toString());
+
+                    if (aiCount >= 3 && !sessionStorage.getItem(`saas_booking_offered_${businessId}`)) {
+                        setTimeout(() => addBookingForm(), 1500);
+                    }
                 }
             } catch(e) {
                 loader.remove();

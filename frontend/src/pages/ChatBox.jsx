@@ -13,6 +13,7 @@ import UploadModal    from '../components/UploadModal'
 import SearchModal    from '../components/SearchModal'
 import CreateBotModal from '../components/CreateBotModal'
 import TrainingStats   from '../pages/TrainingStats'
+import MeetingLeads   from './MeetingLeads'
 
 const API_BASE = 'https://ai-chatbot-lpap.onrender.com/api'
 
@@ -1142,6 +1143,13 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
         {view === 'training' && (
           <div className="flex-1 overflow-y-auto">
             <TrainingStats wsId={activeWsId} token={token} isDarkMode={isDarkMode} />
+          </div>
+        )}
+
+        {/* ── BOOKINGS VIEW (Client Only) ── */}
+        {view === 'bookings' && user.role === 'client' && (
+          <div className="flex-1 overflow-y-auto">
+            <MeetingLeads wsId={activeWsId} token={token} />
           </div>
         )}
 

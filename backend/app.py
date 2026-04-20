@@ -631,6 +631,22 @@ def detect_colors():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# ── Meeting Bookings (Admin) ───────────────────────────────────────────────────
+@app.route('/api/admin/bookings', methods=['GET'])
+@require_auth(allowed_roles=['admin'])
+def get_admin_bookings():
+    ws_id = request.args.get('ws_id') or request.user.get('ws_id')
+    return jsonify(db.get_meeting_bookings(ws_id))
+
+@app.route('/api/admin/bookings/<booking_id>', methods=['DELETE'])
+@require_auth(allowed_roles=['admin'])
+def delete_admin_booking(booking_id):
+    try:
+        db.delete_meeting_booking(booking_id)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/knowledge/<item_id>', methods=['DELETE'])
 @require_auth()
 def delete_knowledge(item_id):
@@ -757,6 +773,25 @@ def widget_chat():
         pass # Ignore db errors on widget chat for maximum uptime
 
     return jsonify({"response": ans})
+
+# ── Meeting Bookings (Widget) ──────────────────────────────────────────────────
+@app.route('/api/widget/booking', methods=['POST'])
+def widget_booking():
+    data = request.json
+    business_id = data.get('business_id')
+    name = data.get('name')
+    email = data.get('email')
+    date = data.get('date')
+    time = data.get('time')
+    
+    if not all([business_id, name, email, date, time]):
+        return jsonify({"error": "Missing required fields"}), 400
+    
+    try:
+        db.save_meeting_booking(business_id, name, email, date, time)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/widget/config/<ws_id>', methods=['GET'])
 def get_widget_config(ws_id):

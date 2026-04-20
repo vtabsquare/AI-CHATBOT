@@ -143,6 +143,20 @@ class DBService:
         res = self.db.table("leads").select("*").eq("ws_id", ws_id).order("created_at", desc=True).execute()
         return res.data if res.data else []
 
+    # ── Meeting Bookings ──────────────────────────────────────────────────────
+    def save_meeting_booking(self, ws_id, name, email, date, time):
+        self.db.table("meeting_bookings").insert({
+            "ws_id": ws_id, "name": name, "email": email, 
+            "requested_date": date, "requested_time": time
+        }).execute()
+
+    def get_meeting_bookings(self, ws_id):
+        res = self.db.table("meeting_bookings").select("*").eq("ws_id", ws_id).order("created_at", desc=True).execute()
+        return res.data if res.data else []
+
+    def delete_meeting_booking(self, booking_id):
+        self.db.table("meeting_bookings").delete().eq("id", booking_id).execute()
+
     # ── Bot Reviews ──────────────────────────────────────────────────────────
     def save_bot_review(self, review_id, ws_id, rating, comment, user_name="Anonymous", user_email=""):
         self.db.table("bot_reviews").insert({
