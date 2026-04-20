@@ -11,7 +11,13 @@
         if (src && src.includes('widget.js')) {
             // Detect host from script src (works for ngrok, localhost, or production)
             const url = new URL(src, window.location.href);
-            HOST = `${url.protocol}//${url.host}`;
+            if (url.host.includes('localhost') || url.host.includes('127.0.0.1')) {
+                // If the script is loaded from localhost, but we're on a demo site, 
+                // we should stick to the production backend fallback.
+                HOST = "https://ai-chatbot-lpap.onrender.com";
+            } else {
+                HOST = `${url.protocol}//${url.host}`;
+            }
         }
         
         const sid = scripts[i].getAttribute('data-business-id');
