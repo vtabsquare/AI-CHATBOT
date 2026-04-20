@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Sparkles, ChevronLeft, ChevronRight, Bot, User, LogOut, Moon, Sun, Search } from 'lucide-react'
+import { Plus, Sparkles, Calendar, ChevronLeft, ChevronRight, Bot, User, LogOut, Moon, Sun, Search } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WorkspaceItem from './WorkspaceItem'
