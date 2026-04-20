@@ -15,7 +15,7 @@ class AIService:
         
         # Initialize Stable Gemini SDK (Original Path)
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel('gemini-2.0-flash')
+        self.model = genai.GenerativeModel('gemini-flash-latest')
         
         # ── RAG COMPONENTS ──
         from langchain_google_genai import GoogleGenerativeAIEmbeddings
