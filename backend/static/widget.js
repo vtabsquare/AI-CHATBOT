@@ -158,7 +158,7 @@
                 <div id="saas-chat-quick-links" style="opacity: 0; display: none; transition: opacity 0.5s; flex-wrap: wrap; gap: 8px; padding: 10px 20px;">
                     ${quickQuestions.map(q => `<button class="saas-chip">${q}</button>`).join('')}
                     <button class="saas-chip" id="saas-btn-connect" style="background: var(--saas-accent-low); border-color: var(--saas-accent); color: var(--saas-accent);">💬 Connect with Team</button>
-                    <button class="saas-chip saas-chip-review" id="saas-btn-review" style="background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; display: none;">⭐ Leave a Review</button>
+                    <button class="saas-chip saas-chip-review" id="saas-btn-review" style="background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24;">⭐ Leave a Review</button>
                 </div>
                 <div id="saas-chat-input-container">
                     <div class="saas-input-wrapper">
@@ -240,10 +240,16 @@
                     quickLinks.style.display = 'flex';
                     setTimeout(() => { 
                         quickLinks.style.opacity = '1'; 
-                        // UX Update: Hide review button if already submitted
+                        // Persist action buttons until submitted
                         const revBtn = document.getElementById('saas-btn-review');
-                        if (revBtn && sessionStorage.getItem(`saas_review_submitted_${businessId}`)) {
-                            revBtn.style.display = 'none';
+                        if (revBtn) {
+                            if (sessionStorage.getItem(`saas_review_submitted_${businessId}`)) revBtn.style.display = 'none';
+                            else revBtn.style.display = 'inline-block';
+                        }
+                        const connBtn = document.getElementById('saas-btn-connect');
+                        if (connBtn) {
+                            if (sessionStorage.getItem(`saas_booking_submitted_${businessId}`)) connBtn.style.display = 'none';
+                            else connBtn.style.display = 'inline-block';
                         }
                     }, 10);
                 }
@@ -253,8 +259,8 @@
                     messagesDiv.innerHTML = ''; // Clear the "pre-capture" greeting to avoid duplication
                     addMessage(`Hi! I am <strong>${botName}</strong>, ${botGreeting}`, 'ai', true);
                 } else if (quickLinks) {
-                    // UX Update: If history exists, hide standard chips immediately on load
-                    const chips = quickLinks.querySelectorAll('.saas-chip:not(.saas-chip-review)');
+                    // Hide standard question chips but keep action buttons
+                    const chips = quickLinks.querySelectorAll('.saas-chip:not(.saas-chip-review):not(#saas-btn-connect)');
                     chips.forEach(c => c.style.display = 'none');
                 }
             } else {
@@ -448,7 +454,9 @@
                         if (res.ok) {
                             form.style.display = 'none';
                             thanks.style.display = 'block';
-                            sessionStorage.setItem(`saas_booking_offered_${businessId}`, 'true');
+                            sessionStorage.setItem(`saas_booking_submitted_${businessId}`, 'true');
+                            const connBtn = document.getElementById('saas-btn-connect');
+                            if (connBtn) connBtn.style.display = 'none';
                         } else {
                             throw new Error("Server error");
                         }
@@ -601,9 +609,9 @@
             const text = manualText || inputField.value.trim();
             if (!text) return;
             
-            // 1. UX Improvement: Hide standard chips once the first question is asked
+            // 1. Hide standard prompt chips but preserve persistent actions
             if (quickLinks) {
-                const chips = quickLinks.querySelectorAll('.saas-chip:not(.saas-chip-review)');
+                const chips = quickLinks.querySelectorAll('.saas-chip:not(.saas-chip-review):not(#saas-btn-connect)');
                 chips.forEach(c => c.style.display = 'none');
             }
             
