@@ -168,23 +168,6 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
   const [leadsDays,          setLeadsDays]          = useState('all')
   const [copySuccess,        setCopySuccess]        = useState(false)
 
-  const cardCls   = `p-6 rounded-[32px] bg-stone-900/40 border border-white/5 shadow-2xl backdrop-blur-xl transition-all relative overflow-hidden group`
-  const inputCls  = `w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-all`
-  const selectCls = `bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white outline-none focus:border-emerald-500/50`
-
-  const filteredOnboarding = onboardingRequests.filter(req => {
-    if (onboardingDays === 'today') {
-      const today = new Date().toISOString().split('T')[0]
-      return req.created_at.startsWith(today)
-    }
-    return true
-  })
-
-  const handleDeleteOnboarding = async (id) => {
-    if (!window.confirm("Permanent separation? This will remove the client's access.")) return
-    const r = await authFetch(`${API_BASE}/onboarding/${id}`, { method: 'DELETE' })
-    if (r?.ok) setOnboardingRequests(prev => prev.filter(req => req.id !== id))
-  }
 
   // ── QA form state ────────────────────────────────────────────────────────
   const newQRef = useRef(null)
@@ -500,11 +483,9 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
   }
 
   // ── CSS shorthand helpers ─────────────────────────────────────────────────
-  const cardCls   = "p-7 rounded-[24px] transition-all bg-surface border border-subtle hover:border-medium shadow-glass"
-  const inputCls  = `w-full ${isDarkMode ? 'bg-[#11332c]' : 'bg-white'} border-subtle border px-4 py-3 rounded-2xl outline-none` +
-                    " focus:ring-1 ring-emerald-500/50 text-sm focus:border-emerald-400 text-primary transition-all shadow-inner"
-  const selectCls = "bg-surface border border-subtle px-4 py-2 rounded-xl text-xs font-bold text-primary " +
-                    "outline-none cursor-pointer hover:border-medium transition-all shadow-sm focus:ring-1 ring-emerald-500/30"
+  const cardCls   = `p-6 rounded-[32px] bg-stone-900/40 border border-white/5 shadow-2xl backdrop-blur-xl transition-all relative overflow-hidden group`
+  const inputCls  = `w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-all`
+  const selectCls = `bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white outline-none focus:border-emerald-500/50`
   const tabBtnCls = (v) => `px-4 py-2 rounded-xl text-xs font-bold transition-all ${
     view === v
       ? isDarkMode ? 'bg-[#064e40] text-[#10b981] shadow-lg shadow-emerald-500/10 border border-emerald-500/20' 
