@@ -116,6 +116,11 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
   const [searchOpen,           setSearchOpen]           = useState(false)
   const [isCreateBotModalOpen, setIsCreateBotModalOpen] = useState(false)
   const [view, setView] = useState(initialView) // chat | catalogue | qa | reviews | settings | onboarding | training
+  
+  // ── Sync View with URL Prop (Fixes sidebar links) ──
+  useEffect(() => {
+    setView(initialView)
+  }, [initialView])
 
   useEffect(() => {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setSearchOpen(true) } }

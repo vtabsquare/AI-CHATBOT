@@ -887,6 +887,25 @@ def widget_submit_lead():
         print(f"[Lead Capture ERROR]: {str(e)}")
         return jsonify({"error": "Storage Failure"}), 500
 
+@app.route('/api/widget/booking', methods=['POST'])
+def widget_submit_booking():
+    data = request.json
+    ws_id = data.get('ws_id')
+    name = data.get('name')
+    email = data.get('email')
+    date = data.get('date')
+    time = data.get('time')
+    
+    if not all([ws_id, name, email, date, time]):
+        return jsonify({"error": "All fields are required"}), 400
+        
+    try:
+        db.save_meeting_booking(ws_id, name, email, date, time)
+        return jsonify({"status": "success"})
+    except Exception as e:
+        print(f"[Booking Capture ERROR]: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/client/leads', methods=['GET'])
 @require_auth(allowed_roles=['client', 'admin'])
 def get_client_leads():
