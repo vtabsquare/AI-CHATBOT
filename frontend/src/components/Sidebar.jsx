@@ -194,27 +194,27 @@ export default function Sidebar({
 
       {/* User Profile / Sign Out Bottom */}
       <div className="p-3 border-t mt-auto" style={{ borderColor: 'var(--border-subtle)' }}>
+        {activeWsId && user?.role === 'client' && (
+          <motion.button
+            whileHover={{ background: 'rgba(255,255,255,0.05)' }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate(`/meeting-leads/${activeWsId}`)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left mb-1 text-purple-400 hover:text-purple-300"
+          >
+             <Calendar size={16} />
+             {!collapsed && <span className="text-xs font-black uppercase tracking-widest">Meeting Requests</span>}
+          </motion.button>
+        )}
         {activeWsId && (
-          <>
-            <motion.button
-              whileHover={{ background: 'rgba(255,255,255,0.05)' }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate(`/meeting-leads/${activeWsId}`)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left mb-1 text-purple-400 hover:text-purple-300"
-            >
-               <Calendar size={16} />
-               {!collapsed && <span className="text-xs font-black uppercase tracking-widest">Meeting Requests</span>}
-            </motion.button>
-            <motion.button
-              whileHover={{ background: 'rgba(255,255,255,0.05)' }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate(`/training-status/${activeWsId}`)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left mb-2 text-emerald-500 hover:text-emerald-400"
-            >
-               <Sparkles size={16} />
-               {!collapsed && <span className="text-xs font-black uppercase tracking-widest">Intelligence Status</span>}
-            </motion.button>
-          </>
+          <motion.button
+            whileHover={{ background: 'rgba(255,255,255,0.05)' }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate(`/training-status/${activeWsId}`)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left mb-2 text-emerald-500 hover:text-emerald-400"
+          >
+             <Sparkles size={16} />
+             {!collapsed && <span className="text-xs font-black uppercase tracking-widest">Intelligence Status</span>}
+          </motion.button>
         )}
         <motion.button
           whileHover={{ background: 'rgba(255,255,255,0.05)' }}

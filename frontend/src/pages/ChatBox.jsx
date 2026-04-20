@@ -12,7 +12,7 @@ import ChatInput      from '../components/ChatInput'
 import UploadModal    from '../components/UploadModal'
 import SearchModal    from '../components/SearchModal'
 import CreateBotModal from '../components/CreateBotModal'
-import TrainingStats   from '../pages/TrainingStats'
+import TrainingStats   from './TrainingStats'
 import MeetingLeads   from './MeetingLeads'
 
 const API_BASE = 'https://ai-chatbot-lpap.onrender.com/api'
@@ -1147,14 +1147,14 @@ export default function ChatBox({ token, user, onLogout, isDarkMode: propIsDarkM
         )}
 
         {/* ── BOOKINGS VIEW (Client Only) ── */}
-        {view === 'bookings' && user.role === 'client' && (
+        {view === 'bookings' && user?.role === 'client' && (
           <div className="flex-1 overflow-y-auto">
             <MeetingLeads wsId={activeWsId} token={token} />
           </div>
         )}
 
         {/* ── ONBOARDING VIEW (Admin Only) ── */}
-        {view === 'onboarding' && user.role === 'admin' && (
+        {view === 'onboarding' && user?.role === 'admin' && (
           <div className="flex-1 p-8 overflow-y-auto">
             <div className="flex justify-between items-center pb-6 mb-8 border-b border-subtle">
               <div>
