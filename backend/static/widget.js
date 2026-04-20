@@ -424,6 +424,13 @@
                     return;
                 }
 
+                // 📧 Email Validation Regex
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert("Please enter a valid email address (e.g., name@example.com).");
+                    return;
+                }
+
                 submitBtn.disabled = true;
                 submitBtn.textContent = "Verifying...";
 
