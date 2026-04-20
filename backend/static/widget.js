@@ -9,12 +9,10 @@
     for (let i = 0; i < scripts.length; i++) {
         const src = scripts[i].getAttribute('src');
         if (src && src.includes('widget.js')) {
-            // Detect host from script src (works for ngrok, localhost, or production)
             const url = new URL(src, window.location.href);
+            // Dynamic host detection: If loaded from localhost, point to localhost backend (assumed port 5000)
             if (url.host.includes('localhost') || url.host.includes('127.0.0.1')) {
-                // If the script is loaded from localhost, but we're on a demo site, 
-                // we should stick to the production backend fallback.
-                HOST = "https://ai-chatbot-lpap.onrender.com";
+                HOST = "http://localhost:5000";
             } else {
                 HOST = `${url.protocol}//${url.host}`;
             }
@@ -159,7 +157,8 @@
                 <div id="saas-chat-messages"></div>
                 <div id="saas-chat-quick-links" style="opacity: 0; display: none; transition: opacity 0.5s; flex-wrap: wrap; gap: 8px; padding: 10px 20px;">
                     ${quickQuestions.map(q => `<button class="saas-chip">${q}</button>`).join('')}
-                    <button class="saas-chip saas-chip-review" id="saas-btn-review" style="background: var(--saas-accent-low); border-color: var(--saas-accent); color: var(--saas-accent);">⭐ Leave a Review</button>
+                    <button class="saas-chip" id="saas-btn-connect" style="background: var(--saas-accent-low); border-color: var(--saas-accent); color: var(--saas-accent);">💬 Connect with Team</button>
+                    <button class="saas-chip saas-chip-review" id="saas-btn-review" style="background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; display: none;">⭐ Leave a Review</button>
                 </div>
                 <div id="saas-chat-input-container">
                     <div class="saas-input-wrapper">
@@ -381,24 +380,17 @@
             const wrap = document.createElement('div');
             wrap.className = 'saas-booking-container';
             wrap.innerHTML = `
-                <div class="saas-card" style="border: 2px solid #a855f7; box-shadow: 0 0 30px rgba(168, 85, 247, 0.2); margin: 20px 0;">
-                    <div class="saas-card-header" style="background: linear-gradient(135deg, #a855f7, #7c3aed); padding: 15px; text-align: center;">
-                        <div class="saas-lead-title" style="color: #fff; font-weight: 800; font-size: 14px; text-transform: uppercase;">Schedule a Consultation</div>
-                        <div style="font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Premium Concierge Active</div>
+                <div class="saas-card" style="border: 2px solid var(--saas-accent); box-shadow: 0 0 30px var(--saas-accent-low); margin: 20px 0;">
+                    <div class="saas-card-header" style="background: linear-gradient(135deg, var(--saas-accent-secondary), var(--saas-accent)); padding: 15px; text-align: center;">
+                        <div class="saas-lead-title" style="color: var(--saas-accent-contrast); font-weight: 800; font-size: 14px; text-transform: uppercase;">Schedule a Consultation</div>
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.9); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Expert Support Available</div>
                     </div>
-                    <div class="saas-booking-step-1" style="padding: 20px; text-align: center;">
-                        <p style="color: var(--saas-text); font-size: 13px; margin-bottom: 20px; font-weight: 600;">Would you like to schedule a quick call to discuss your queries with our experts?</p>
-                        <div style="display: flex; gap: 10px; justify-content: center;">
-                            <button id="saas-book-yes" style="background: #a855f7; color: #fff; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase;">Yes, Let's Chat</button>
-                            <button id="saas-book-no" style="background: var(--saas-input-bg); color: var(--saas-text-muted); padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase;">Not Now</button>
-                        </div>
-                    </div>
-                    <div class="saas-booking-form" style="display: none; padding: 20px;">
+                    <div class="saas-booking-form" style="padding: 20px;">
                         <div class="saas-input-group">
                             <label id="saas-booking-label" style="color: var(--saas-text-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block;">What is your full name?</label>
                             <input type="text" id="saas-booking-input" placeholder="Enter your name" style="background: var(--saas-input-bg); color: var(--saas-text); border: 1px solid var(--saas-border); width: 100%; padding: 12px; border-radius: 12px; box-sizing: border-box; outline: none; transition: border-color 0.2s;">
                         </div>
-                        <button id="saas-booking-next" style="background: #a855f7; color: #fff; width: 100%; margin-top: 15px; border-radius: 12px; padding: 12px; font-weight: 800; text-transform: uppercase; font-size: 11px;">Next Step →</button>
+                        <button id="saas-booking-next" style="background: var(--saas-accent); color: var(--saas-accent-contrast); width: 100%; margin-top: 15px; border-radius: 12px; padding: 12px; font-weight: 800; text-transform: uppercase; font-size: 11px; border: none; cursor: pointer;">Next Step →</button>
                     </div>
                     <div class="saas-booking-thanks" style="display:none; color:var(--saas-text); text-align:center; padding:30px; font-weight:800; text-transform:uppercase; font-size: 12px;">
                         <div style="font-size: 40px; margin-bottom: 15px;">🗓️</div>
@@ -409,24 +401,15 @@
             messagesDiv.appendChild(wrap);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-            const step1 = wrap.querySelector('.saas-booking-step-1');
             const form = wrap.querySelector('.saas-booking-form');
             const input = wrap.querySelector('#saas-booking-input');
             const label = wrap.querySelector('#saas-booking-label');
             const nextBtn = wrap.querySelector('#saas-booking-next');
             const thanks = wrap.querySelector('.saas-booking-thanks');
 
-            wrap.querySelector('#saas-book-yes').onclick = () => {
-                step1.style.display = 'none';
-                form.style.display = 'block';
-                input.value = sessionStorage.getItem(`saas_lead_name_${businessId}`) || "";
-                input.focus();
-                bookingStep = 1;
-            };
-            wrap.querySelector('#saas-book-no').onclick = () => {
-                wrap.remove();
-                sessionStorage.setItem(`saas_booking_offered_${businessId}`, 'true');
-            };
+            input.value = sessionStorage.getItem(`saas_lead_name_${businessId}`) || "";
+            input.focus();
+            bookingStep = 1;
 
             nextBtn.onclick = async () => {
                 const val = input.value.trim();
@@ -441,13 +424,13 @@
                 } else if (bookingStep === 2) {
                     bookingData.email = val;
                     label.innerText = "Preferred Date & Day?";
-                    input.placeholder = "e.g. Oct 24th, Friday";
+                    input.type = "date";
                     input.value = "";
                     bookingStep = 3;
                 } else if (bookingStep === 3) {
                     bookingData.date = val;
                     label.innerText = "What time works best?";
-                    input.placeholder = "e.g. 10:00 AM or Evening";
+                    input.type = "time";
                     input.value = "";
                     bookingStep = 4;
                 } else if (bookingStep === 4) {
@@ -644,14 +627,12 @@
                     if (data.chat_id) sessionStorage.setItem(`saas_chat_id_${businessId}`, data.chat_id);
                     addMessage(data.response, 'ai', true);
                     
-                    // 2. Intelligence: Proactive Call Booking Trigger (After 3 or more AI messages if not offered)
+                    // 2. Intelligence: Update session counters
                     let aiCount = parseInt(sessionStorage.getItem(`saas_ai_msg_count_${businessId}`) || '0');
                     aiCount++;
                     sessionStorage.setItem(`saas_ai_msg_count_${businessId}`, aiCount.toString());
 
-                    if (aiCount >= 3 && !sessionStorage.getItem(`saas_booking_offered_${businessId}`)) {
-                        setTimeout(() => addBookingForm(), 1500);
-                    }
+                    // (Proactive trigger removed - now manual via 'Connect with Team' button)
                 }
             } catch(e) {
                 loader.remove();
@@ -666,6 +647,8 @@
             if (e.target.classList.contains('saas-chip')) {
                 if (e.target.classList.contains('saas-chip-review')) {
                     addReviewForm();
+                } else if (e.target.id === 'saas-btn-connect') {
+                    addBookingForm();
                 } else {
                     sendMessage(e.target.innerText);
                 }

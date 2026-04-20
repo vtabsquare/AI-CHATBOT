@@ -778,19 +778,21 @@ def widget_chat():
 @app.route('/api/widget/booking', methods=['POST'])
 def widget_booking():
     data = request.json
-    business_id = data.get('business_id')
+    # Handle both naming conventions for compatibility
+    ws_id = data.get('ws_id') or data.get('business_id')
     name = data.get('name')
     email = data.get('email')
     date = data.get('date')
     time = data.get('time')
     
-    if not all([business_id, name, email, date, time]):
+    if not all([ws_id, name, email, date, time]):
         return jsonify({"error": "Missing required fields"}), 400
     
     try:
-        db.save_meeting_booking(business_id, name, email, date, time)
-        return jsonify({"success": True})
+        db.save_meeting_booking(ws_id, name, email, date, time)
+        return jsonify({"status": "success", "success": True})
     except Exception as e:
+        print(f"[Booking Capture ERROR]: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/widget/config/<ws_id>', methods=['GET'])
@@ -887,24 +889,6 @@ def widget_submit_lead():
         print(f"[Lead Capture ERROR]: {str(e)}")
         return jsonify({"error": "Storage Failure"}), 500
 
-@app.route('/api/widget/booking', methods=['POST'])
-def widget_submit_booking():
-    data = request.json
-    ws_id = data.get('ws_id')
-    name = data.get('name')
-    email = data.get('email')
-    date = data.get('date')
-    time = data.get('time')
-    
-    if not all([ws_id, name, email, date, time]):
-        return jsonify({"error": "All fields are required"}), 400
-        
-    try:
-        db.save_meeting_booking(ws_id, name, email, date, time)
-        return jsonify({"status": "success"})
-    except Exception as e:
-        print(f"[Booking Capture ERROR]: {str(e)}")
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/client/leads', methods=['GET'])
 @require_auth(allowed_roles=['client', 'admin'])
