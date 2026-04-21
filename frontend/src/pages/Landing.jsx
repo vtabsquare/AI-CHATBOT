@@ -69,7 +69,7 @@ export default function Landing() {
            style={{ color: 'var(--nature-accent)' }}
         >
           <Sparkles size={12} className="text-emerald-400" />
-          Powered by Llama 3 Pro
+          Powered by Gemini 1.5 Pro
         </motion.div>
 
         <motion.h1

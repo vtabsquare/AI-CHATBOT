@@ -436,11 +436,33 @@
                 } else if (bookingStep === 3) {
                     bookingData.date = val;
                     label.innerText = "What time works best?";
-                    input.type = "time";
-                    input.value = "";
+                    
+                    // Replace input with professional selectors
+                    const inputParent = input.parentElement;
+                    input.style.display = 'none';
+                    const timePicker = document.createElement('div');
+                    timePicker.id = 'saas-time-picker';
+                    timePicker.style.display = 'flex';
+                    timePicker.style.gap = '8px';
+                    timePicker.innerHTML = `
+                        <select id="saas-time-h" style="flex:1; background:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none;">
+                            ${[...Array(12).keys()].map(i => `<option value="${(i+1).toString().padStart(2,'0')}">${i+1}</option>`).join('')}
+                        </select>
+                        <select id="saas-time-m" style="flex:1; background:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none;">
+                            <option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option>
+                        </select>
+                        <select id="saas-time-p" style="flex:1; background:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none;">
+                            <option value="AM">AM</option><option value="PM">PM</option>
+                        </select>
+                    `;
+                    inputParent.appendChild(timePicker);
                     bookingStep = 4;
+                    return; // Prevent immediate execution of next step
                 } else if (bookingStep === 4) {
-                    bookingData.time = val;
+                    const h = wrap.querySelector('#saas-time-h').value;
+                    const m = wrap.querySelector('#saas-time-m').value;
+                    const p = wrap.querySelector('#saas-time-p').value;
+                    bookingData.time = `${h}:${m} ${p}`;
                     
                     nextBtn.disabled = true;
                     nextBtn.innerText = "Securing Slot...";
@@ -499,9 +521,9 @@
                         </div>
                         <div class="saas-input-group">
                             <label style="color: var(--saas-text-muted);">User Type</label>
-                            <select class="saas-lead-type" style="background: var(--saas-bg-solid); color: var(--saas-text); border: 1px solid var(--saas-border); border-radius: 12px; padding: 10px; cursor: pointer; outline: none; width: 100%;">
-                                <option value="individual" style="background: #ffffff; color: #000000;">Individual</option>
-                                <option value="organization" style="background: #ffffff; color: #000000;">Organization</option>
+                            <select class="saas-lead-type">
+                                <option value="individual">Individual</option>
+                                <option value="organization">Organization</option>
                             </select>
                         </div>
                         <div class="saas-lead-org-wrap" style="display:none; margin-top:10px;">
