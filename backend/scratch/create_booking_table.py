@@ -3,7 +3,7 @@ import psycopg2
 from dotenv import load_dotenv
 
 # Load env
-_backend_dir = os.path.dirname(os.path.abspath(__file__))
+_backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(dotenv_path=os.path.join(_backend_dir, ".env"))
 
 def create_table():

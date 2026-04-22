@@ -446,17 +446,17 @@
                     timePicker.style.gap = '8px';
                     timePicker.innerHTML = `
                         <select id="saas-time-h" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none; color-scheme: dark;">
-                            ${[...Array(12).keys()].map(i => `<option value="${(i+1).toString().padStart(2,'0')}" style="background:#1a2e28; color:#ffffff;">${(i+1).toString().padStart(2,'0')}</option>`).join('')}
+                            ${[...Array(12).keys()].map(i => `<option value="${(i+1).toString().padStart(2,'0')}">${(i+1).toString().padStart(2,'0')}</option>`).join('')}
                         </select>
                         <select id="saas-time-m" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none; color-scheme: dark;">
-                            <option value="00" style="background:#1a2e28; color:#ffffff;">00</option>
-                            <option value="15" style="background:#1a2e28; color:#ffffff;">15</option>
-                            <option value="30" style="background:#1a2e28; color:#ffffff;">30</option>
-                            <option value="45" style="background:#1a2e28; color:#ffffff;">45</option>
+                            <option value="00">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
                         </select>
                         <select id="saas-time-p" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none; color-scheme: dark;">
-                            <option value="AM" style="background:#1a2e28; color:#ffffff;">AM</option>
-                            <option value="PM" style="background:#1a2e28; color:#ffffff;">PM</option>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
                         </select>
                     `;
                     inputParent.appendChild(timePicker);
@@ -527,7 +527,7 @@
                         </div>
                         <div class="saas-input-group">
                             <label style="color: var(--saas-text-muted);">User Type</label>
-                            <select class="saas-lead-type">
+                            <select class="saas-lead-type" style="color-scheme: dark;">
                                 <option value="individual">Individual</option>
                                 <option value="organization">Organization</option>
                             </select>
