@@ -777,8 +777,6 @@ def widget_chat():
 # ── Meeting Bookings (Widget) ──────────────────────────────────────────────────
 @app.route('/api/widget/booking', methods=['POST', 'OPTIONS'])
 def widget_booking():
-    if request.method == 'OPTIONS':
-        return '', 204
     data = request.json
     # Handle both naming conventions for compatibility
     ws_id = data.get('ws_id') or data.get('business_id')
@@ -794,8 +792,9 @@ def widget_booking():
         db.save_meeting_booking(ws_id, name, email, date, time)
         return jsonify({"status": "success", "success": True})
     except Exception as e:
-        print(f"[Booking Capture ERROR]: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        import traceback
+        print(f"[Booking ERROR] {traceback.format_exc()}")
+        return jsonify({"error": str(e), "detail": traceback.format_exc()[-500:]}), 500
 
 @app.route('/api/widget/config/<ws_id>', methods=['GET'])
 def get_widget_config(ws_id):
