@@ -445,18 +445,18 @@
                     timePicker.style.display = 'flex';
                     timePicker.style.gap = '8px';
                     timePicker.innerHTML = `
-                        <select id="saas-time-h" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none; color-scheme: dark;">
-                            ${[...Array(12).keys()].map(i => `<option value="${(i+1).toString().padStart(2,'0')}">${(i+1).toString().padStart(2,'0')}</option>`).join('')}
+                        <select id="saas-time-h" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none;">
+                            ${[...Array(12).keys()].map(i => `<option value="${(i+1).toString().padStart(2,'0')}" style="background: white !important; color: black !important;">${(i+1).toString().padStart(2,'0')}</option>`).join('')}
                         </select>
-                        <select id="saas-time-m" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none; color-scheme: dark;">
-                            <option value="00">00</option>
-                            <option value="15">15</option>
-                            <option value="30">30</option>
-                            <option value="45">45</option>
+                        <select id="saas-time-m" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none;">
+                            <option value="00" style="background: white !important; color: black !important;">00</option>
+                            <option value="15" style="background: white !important; color: black !important;">15</option>
+                            <option value="30" style="background: white !important; color: black !important;">30</option>
+                            <option value="45" style="background: white !important; color: black !important;">45</option>
                         </select>
-                        <select id="saas-time-p" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none; color-scheme: dark;">
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
+                        <select id="saas-time-p" style="flex:1; background-color:var(--saas-input-bg); color:var(--saas-text); border:1px solid var(--saas-border); border-radius:12px; padding:10px; appearance:none;">
+                            <option value="AM" style="background: white !important; color: black !important;">AM</option>
+                            <option value="PM" style="background: white !important; color: black !important;">PM</option>
                         </select>
                     `;
                     inputParent.appendChild(timePicker);
@@ -527,9 +527,9 @@
                         </div>
                         <div class="saas-input-group">
                             <label style="color: var(--saas-text-muted);">User Type</label>
-                            <select class="saas-lead-type" style="color-scheme: dark;">
-                                <option value="individual">Individual</option>
-                                <option value="organization">Organization</option>
+                            <select class="saas-lead-type">
+                                <option value="individual" style="background: white !important; color: black !important;">Individual</option>
+                                <option value="organization" style="background: white !important; color: black !important;">Organization</option>
                             </select>
                         </div>
                         <div class="saas-lead-org-wrap" style="display:none; margin-top:10px;">

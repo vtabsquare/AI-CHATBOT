@@ -633,13 +633,13 @@ def detect_colors():
 
 # ── Meeting Bookings (Admin) ───────────────────────────────────────────────────
 @app.route('/api/admin/bookings', methods=['GET'])
-@require_auth(allowed_roles=['admin'])
+@require_auth(allowed_roles=['admin', 'client'])
 def get_admin_bookings():
     ws_id = request.args.get('ws_id') or request.user.get('ws_id')
     return jsonify(db.get_meeting_bookings(ws_id))
 
 @app.route('/api/admin/bookings/<booking_id>', methods=['DELETE'])
-@require_auth(allowed_roles=['admin'])
+@require_auth(allowed_roles=['admin', 'client'])
 def delete_admin_booking(booking_id):
     try:
         db.delete_meeting_booking(booking_id)
