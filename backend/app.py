@@ -775,7 +775,7 @@ def widget_chat():
     return jsonify({"response": ans})
 
 # ── Meeting Bookings (Widget) ──────────────────────────────────────────────────
-@app.route('/api/widget/booking', methods=['POST', 'OPTIONS'])
+@app.route('/api/widget/booking', methods=['POST'])
 def widget_booking():
     data = request.json
     # Handle both naming conventions for compatibility
