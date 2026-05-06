@@ -68,15 +68,10 @@ os.makedirs("data_store/uploads", exist_ok=True)
 
 # ── Seed admin accounts with User-specified passwords ──────────────────────
 try:
-    # Admin Account 1: Gokulnath M
-    if not db.get_user_by_email("gokulnathm.vtab@gmail.com"):
-        db.create_user("u_gokul1", "gokulnathm.vtab@gmail.com",
-                       generate_password_hash("Gokul@45"), "admin", None, "gokulnathm.vtab@gmail.com")
-    
-    # Admin Account 2: Secondary Email
-    if not db.get_user_by_email("gokulnath96880@gmail.com"):
-        db.create_user("u_gokul2", "gokulnath96880@gmail.com",
-                       generate_password_hash("Rohit1@45"), "admin", None, "gokulnath96880@gmail.com")
+    # Admin Account: Balamuraleee
+    if not db.get_user_by_email("balamuraleee@gmail.com"):
+        db.create_user("u_admin_1", "balamuraleee@gmail.com",
+                       generate_password_hash("Bala@1234"), "admin", None, "balamuraleee@gmail.com")
 except Exception as e:
     print(f"[SEED ERROR] {e}")
 
