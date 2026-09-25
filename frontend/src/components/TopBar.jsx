@@ -37,6 +37,7 @@ export default function TopBar({ workspaceName, onKnowledgeToggle, knowledgeOpen
       </div>
 
       <div className="flex items-center gap-2">
+        <a href="https://www.vtabsquare.com/?demo=1&product=ai-chatbot&source=ai-workspace-chatbot" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-[#0a2f2a] hover:bg-emerald-300">Contact for Demo ↗</a>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

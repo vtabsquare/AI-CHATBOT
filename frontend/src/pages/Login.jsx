@@ -82,6 +82,8 @@ export default function Login({ onLogin }) {
           <h2 className="text-3xl font-medium tracking-tight" style={{ color: 'var(--nature-text)' }}>Sign in</h2>
         </div>
 
+        <a href="https://www.vtabsquare.com/?demo=1&product=ai-chatbot&source=ai-workspace-chatbot" target="_blank" rel="noopener noreferrer" className="mb-5 block rounded-full bg-emerald-500 px-5 py-3 text-center text-sm font-semibold text-[#0a2f2a] transition-all hover:bg-emerald-300">Contact for Demo ↗</a>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="space-y-1">
             <div className="relative group">
