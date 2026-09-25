@@ -49,6 +49,8 @@ export default function Landing() {
           <span className="text-xl font-medium tracking-tight" style={{ color: 'var(--nature-text)' }}>AI<span className="text-emerald-400 ml-0.5">Workspace</span></span>
         </div>
 
+        <div className="flex items-center gap-3">
+        <a href="https://www.vtabsquare.com/?demo=1&product=ai-chatbot&source=ai-workspace-chatbot" target="_blank" rel="noopener noreferrer" className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-[#0a2f2a] transition-all hover:bg-emerald-300">Contact for Demo ↗</a>
         <Link
           to="/login"
           className="px-6 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95 nature-glass border border-white/10"
@@ -56,6 +58,7 @@ export default function Landing() {
         >
           Sign in →
         </Link>
+        </div>
       </nav>
 
       {/* Hero */}
